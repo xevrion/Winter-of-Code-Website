@@ -2,29 +2,31 @@ import React from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { togglestate } from '../store/toggle';
 import { Link } from "react-router-dom";
-import { FaCircle } from 'react-icons/fa';
-
 import {
   BriefcaseIcon,
-  CalendarIcon,
   MapPinIcon,
 } from '@heroicons/react/20/solid';
+import Switch from '@mui/material/Switch';
 import { userstate } from '../store/userState';
 import { wocstate } from '../store/woc';
 import { resultstate } from '../store/results';
-import { Button } from '@mui/material';
 import axios from 'axios';
 import NotFound from './NotFound';
+import { ProjectTables } from './Tables';
+
+const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
 interface CurrentProgramProps {
   name: string;
-  dates: string;
-  active: string;
 }
 
-const CurrentProgram: React.FC<CurrentProgramProps> = ({ name, dates, active }) => {
+
+
+
+const CurrentProgram: React.FC<CurrentProgramProps> = ({ name }) => {
   return (
     <div>
+      <ProjectTables />
       <br />
       <hr />
       <hr />
@@ -34,21 +36,9 @@ const CurrentProgram: React.FC<CurrentProgramProps> = ({ name, dates, active }) 
           {name}
         </h2>
       </div>
-
-      <div className="mt-1 flex flex-col justify-center sm:mt-0 sm:flex-row sm:flex-wrap sm:space-x-6">
-        <div className="mt-2 flex items-center text-sm text-gray-500">
-          <CalendarIcon className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-          {dates}
-        </div>
-      </div>
-
-      <div className="mt-2 flex justify-center items-center text-sm text-gray-500">
-        <FaCircle className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-        {active}
-      </div>
       <br />
-      <div className='flex justify-center'>
-        <span className="hidden sm:block mx-4">
+      <div className='flex justify-center '>
+        <span className=" mx-4">
           <Link to="/addproject">
             <button
               type="button"
@@ -70,7 +60,6 @@ const AdminPortal: React.FC = () => {
   const user = useRecoilValue(userstate);
   const [woc,setwoc]= useRecoilState(wocstate);
   const [results,setresults]=useRecoilState(resultstate)
-  const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const changewoc = async () => {
     try {
       const jwtToken = localStorage.getItem('jwt_token');
@@ -99,6 +88,7 @@ const AdminPortal: React.FC = () => {
       console.error("Error updating status:", error);
     }
   };
+
   return (
     user && user.role == "scrummaster" ? (
     <div className={` overflow-x-hidden h-screen w-screen ${toggle === null ? "" : toggle ? "contract" : "expand"}`}>
@@ -114,8 +104,8 @@ const AdminPortal: React.FC = () => {
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Hi {user.first_name} {user.last_name}!</h2>
               </>
             )}
-            <p className="mt-2 text-lg leading-8 text-gray-600">
-              Manage all of the Winter of Code Program here.
+            <p className="m-2 text-lg leading-8 text-gray-600">
+              Manage all of the Winter of Code Programs here.
             </p>
           </div>
           <br /><br />
@@ -136,17 +126,20 @@ const AdminPortal: React.FC = () => {
             </div>
           </div>
           <br /><br />
-          <div className='flex justify-center m-5'>
+          <div className='w-2/4 mx-auto shadow-md'>
+          <div className='flex justify-between  m-3'>
+        
+          <div className='font-bold mx-2 pt-2'>Start WOC</div>
             <div>
-            {woc ?(<Button onClick={changewoc}  variant="contained">end</Button>):(<Button onClick={changewoc}  variant="contained">start</Button>)}
+          <Switch checked={woc ?? false} onChange={changewoc}/>
             </div>
-            <div className='font-bold mx-2 pt-2'>WOC</div>
             </div>
-            <div className='flex justify-center m-5'>
+            <div className='flex justify-between m-3'>
+            <div className='font-bold mx-2 pt-2'>Announce Results</div>
             <div>
-            {results ?(<Button onClick={changeresults}  variant="contained">Hide</Button>):(<Button onClick={changeresults}  variant="contained">Display</Button>)}
+              </div>
+            <Switch checked={results ?? false} onChange={changeresults}/>
             </div>
-            <div className='font-bold mx-2 pt-2'>Results</div>
             </div>
           <div className="flex justify-center">
             <div className="lg:flex lg:items-center lg:justify-between mx-4">
@@ -155,12 +148,10 @@ const AdminPortal: React.FC = () => {
                 <hr />
                 <br />
                 <div className='flex justify-center'>
-                  <h3 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Current Programs</h3>
+                  <h3 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl my-2">Current Programs</h3>
                 </div>
                 <CurrentProgram 
                   name="Winter of Code 2024" 
-                  dates="XX Jan 24- YY Feb 24" 
-                  active="Active" 
                 />
               </div>
             </div>

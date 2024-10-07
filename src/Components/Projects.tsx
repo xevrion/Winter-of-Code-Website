@@ -41,7 +41,7 @@ const Projects = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [id, setId] = useState("");
   const results=useRecoilValue(resultstate)
-  const [mentor, setMentor] = useState("");
+  const [mentorid, setMentorid] = useState("");
   const [drive, setDrive] = useState("");
   const [title, setTitle] = useState("");
   const [projects, setProjects] = useState<project[]>([]);
@@ -50,16 +50,16 @@ const Projects = () => {
   const woc_state = useRecoilValue(wocstate);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
 
-  const handleOpen = (id: string, mentor: string, title: string) => {
+  const handleOpen = (id: string, mentorid: string, title: string) => {
     setId(id);
-    setMentor(mentor);
+    setMentorid(mentorid);
     setTitle(title);
     setOpen(true);
   };
 
   const handleClose = async (
     id: string,
-    mentor: string,
+    mentorid: string,
     drive: string,
     title: string
 ) => {
@@ -71,7 +71,7 @@ const Projects = () => {
                 _id: id,
                 proposal: {
                     title,
-                    mentor,
+                    mentorid,
                     email: `${user.email}`,
                     name: `${user.first_name} ${user.last_name}`,
                     drive,
@@ -92,12 +92,12 @@ const Projects = () => {
         }
     }
 };
-  const deleteProposal = async (title: string) => {
+  const deleteProposal = async (title: string,id:string) => {
     if (user) { 
       const token = localStorage.getItem('jwt_token')
       try {
         const resp = await axios.delete(
-          `${BASE_URL}/deleteproposal?user_id=${user.id}&title=${title}`,
+          `${BASE_URL}/deleteproposal?user_id=${user.id}&title=${title}&id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -185,11 +185,11 @@ const Projects = () => {
                           {!results && user && user.role === "1" && (
                             <>
                               {user.projects?.some((project: project) => project.id === x.id) ? (
-                                <Button color="error" variant="contained" onClick={() => deleteProposal(x.title)}>
+                                <Button color="error" variant="contained" onClick={() => deleteProposal(x.title,x.id)}>
                                   Delete Proposal
                                 </Button>
                               ) : (
-                                <Button variant="contained" onClick={() => handleOpen(x.id, x.mentor, x.title)}>
+                                <Button variant="contained" onClick={() => handleOpen(x.id, x.mentorid, x.title)}>
                                   Add Proposal
                                 </Button>
                               )}
@@ -220,7 +220,7 @@ const Projects = () => {
                                     disabled={!isChecked}
                                     variant="contained"
                                     sx={{ margin: "10px" }}
-                                    onClick={() => handleClose(id, mentor, drive, title)}
+                                    onClick={() => handleClose(id, mentorid, drive, title)}
                                   >
                                     Submit
                                   </Button>

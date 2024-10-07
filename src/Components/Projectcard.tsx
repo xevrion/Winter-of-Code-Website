@@ -58,22 +58,34 @@ const ProjectCard = ({
                 {year}
               </Chip>
             </div>
-            <div className="text-[24px] font-sans2 font-bold">{title}</div>
-            <div className="flex justify-between">
-              <div className="text-[24px] font-sans2 font-bold text-blue-600">
-                Mentor
-                <div className="flex text-[20px] text-black">{mentor}</div>
-              </div>
-              <div className="text-[24px] font-sans2 text-blue-600 font-bold">
-                Contributors
-                <div className="text-[20px] text-black">
-                  {mentee.substring(0, mentee.indexOf(","))}
+                <div className="text-[24px] font-sans2 font-bold">{title}</div>
+              <div className="flex justify-between">
+                <div className="text-[24px] font-sans2 font-bold text-blue-600">
+                  Mentor
+                  <div className="flex text-[20px] text-black">{mentor}</div>
                 </div>
-                <div className="text-[20px] text-black">
-                  {mentee.substring(mentee.indexOf(",") + 1)}
-                </div>
+                <div className="text-[24px] font-sans2 text-blue-600 font-bold">
+                        Contributors
+                        <div>
+                          {mentee.length > 0 ? (
+                            mentee.reduce<string[][]>((acc, menteeName, index) => {
+                              if (index % 2 === 0) {
+                                acc.push([menteeName]); 
+                              } else {
+                                acc[acc.length - 1].push(menteeName); 
+                              }
+                              return acc; 
+                            }, []).map((group, groupIndex) => (
+                              <div className="text-[22px] font-sans2 font-bold text-black" key={groupIndex}>
+                                {group.join(", ")}
+                              </div>
+                            ))
+                          ) : (
+                            "No mentees" 
+                          )}
+                        </div>
+                        </div>
               </div>
-            </div>
             <CardContent>
               <div className="text-[15px] text-slate-600 font-sans2 ">
                 {description.slice(0, 140)}.
@@ -137,8 +149,26 @@ const ProjectCard = ({
                         </div>
                       </div>
                       <div className="text-[20px]">
-                        Contributors<div>{mentee}</div>
-                      </div>
+                        Contributors
+                        <div>
+                          {mentee.length > 0 ? (
+                            mentee.reduce<string[][]>((acc, menteeName, index) => {
+                              if (index % 2 === 0) {
+                                acc.push([menteeName]); 
+                              } else {
+                                acc[acc.length - 1].push(menteeName); 
+                              }
+                              return acc; 
+                            }, []).map((group, groupIndex) => (
+                              <div key={groupIndex}>
+                                {group.join(", ")}
+                              </div>
+                            ))
+                          ) : (
+                            "No mentees" 
+                          )}
+                        </div>
+                        </div>
                     </div>
                     <Divider style={{ background: "#A9A9A9" }} variant="middle" />
                     <div className="m-3 font-sans2">{description}</div>

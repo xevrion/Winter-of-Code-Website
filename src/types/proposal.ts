@@ -2,7 +2,7 @@ export interface Proposal {
     id: string;
     drive: string;
     name: string;
-    mentor: string;
+    mentorid: string;
     title: string;
     status:boolean;
   }

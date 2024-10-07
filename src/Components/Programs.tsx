@@ -24,7 +24,7 @@ const Programs = () => {
     return (
       x.title.toLowerCase().includes(query.toLowerCase()) ||
       x.mentor.toLowerCase().includes(query.toLowerCase()) ||
-      x.mentee.toLowerCase().includes(query.toLowerCase()) ||
+      x.mentee.some(m => m.toLowerCase().includes(query.toLowerCase())) ||
       x.year.toLowerCase().includes(query.toLowerCase()) ||
       x.description.toLowerCase().includes(query.toLowerCase()) ||
       x.technology.toLowerCase().includes(query.toLowerCase())

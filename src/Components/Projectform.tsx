@@ -13,6 +13,7 @@ const ProjectForm=()=>{
     const [description,setdescription] = useState("");
     const [mentor,setmentor] = useState("");
     const [mentorid,setmentorid]=useState("");
+    const [year,setyear]=useState("");
     const [technology,settechnology] = useState("");
     const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
     const addproject = async () => {
@@ -24,6 +25,7 @@ const ProjectForm=()=>{
           mentor,
           technology,
           mentorid,
+          year
         };
         const token = localStorage.getItem("jwt_token");
         const resp = await axios.post(`${BASE_URL}/project`, projectData, {
@@ -51,7 +53,8 @@ const ProjectForm=()=>{
     }, [BASE_URL]);
 return(
     <div className={`flex justify-center w-screen h-screen bg-slate-100  ${toggle === null ? "" : toggle ? "contract" : "expand"}`}>
-    <div className="flex  flex-col item-center justify center  mt-[130px] bg-white w-[400px] h-[500px] m-5 p-5 ">
+    <div className="flex  flex-col item-center justify center  mt-[130px] bg-white w-[400px] h-screen m-10 p-5 ">
+          <div className="flex justify-center text-blue-600 text-[30px]">Add Project</div>
           <TextField className="m-[5px]" id="outlined-basic" onChange={(e)=>setname(e.target.value)}   label="Name" variant="outlined" />
           <TextField id="outlined-basic" onChange={(e)=>settag(e.target.value)}   margin="normal"  label="Tag" variant="outlined" />
           <TextField
@@ -85,7 +88,7 @@ return(
     );
   })}
 </select>
-
+<TextField id="outlined-basic" onChange={(e)=>setyear(e.target.value)}   margin="normal"  label="Year" variant="outlined" />
           <button className="my-3 bg-blue-500 rounded-md text-white hover:bg-blue-600 p-2 " onClick={addproject}>Submit</button>
 
     </div>

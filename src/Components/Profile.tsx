@@ -16,9 +16,8 @@ const Profile: React.FC = () => {
       if (user) {
           try {
               const token = localStorage.getItem('jwt_token');
-              const userinfo = await axios.post(`${BASE_URL}/userinfo`, {
-                  id: user.id,
-              }, {
+              const userinfo = await axios.get(`${BASE_URL}/userinfo/${user.id}`
+              , {
                   headers: {
                       'Authorization': `Bearer ${token}` 
                   }

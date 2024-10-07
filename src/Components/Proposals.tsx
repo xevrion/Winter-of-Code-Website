@@ -4,76 +4,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { togglestate } from "../store/toggle";
 import { useNavigate } from "react-router-dom";
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Button } from "@mui/material";
 import { Proposal } from "../types/proposal";
+import { CustomizedTables } from "./Tables";
 
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
-
-function CustomizedTables({ proposals, updateproposal }: { proposals: Proposal[], updateproposal: (id: string, completed: boolean) => void }) {
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 700 }} aria-label="customized table">
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>Name</StyledTableCell>
-            <StyledTableCell align="right">Status</StyledTableCell>
-            <StyledTableCell align="right">Drive</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {proposals.map((row) => (
-            <StyledTableRow key={row.id}>
-              <StyledTableCell component="th" scope="row">
-                {row.name}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-              {row.status ? (
-                <Button variant="contained" onClick={() => updateproposal(row.id, row.status)}>Accepted</Button>
-              ) : (
-                <Button variant="contained" onClick={() => updateproposal(row.id, row.status)}>Pending</Button>
-              )}
-            </StyledTableCell>
-
-              <StyledTableCell align="right">
-                <a href={row.drive} target="_blank" rel="noopener noreferrer">
-                  <Button variant="contained" color="primary">
-                    Visit Drive
-                  </Button>
-                </a>
-              </StyledTableCell>
-            </StyledTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
 
 const ProposalPage = () => {
   const navigate = useNavigate();
@@ -82,11 +15,11 @@ const ProposalPage = () => {
   const user = useRecoilValue(userstate);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
   const [status, setstatus] = useState(false);
-  const updateproposal = async (id: string, completed: boolean) => {
+  const updateproposal = async (id: string, completed: boolean,mentorid:string) => {
     try {
       const token = localStorage.getItem("jwt_token");
       const resp = await axios.put(
-        `${BASE_URL}/updateproposal/${id}/${!completed}/${user?.first_name} ${user?.last_name}`,{
+        `${BASE_URL}/updateproposal/${id}/${!completed}/${mentorid}`,{
         },
         {
           headers: {
@@ -110,7 +43,7 @@ const ProposalPage = () => {
         const token = localStorage.getItem("jwt_token");
         try {
           const resp = await axios.get(
-            `${BASE_URL}/proposals/${user.first_name} ${user.last_name}`,
+            `${BASE_URL}/proposals/${user.id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`, 

@@ -14,12 +14,14 @@ import AdminPortal from "./Components/Adminportal.tsx";
 import ProjectForm from "./Components/Projectform.tsx";
 import { useRecoilValueLoadable } from "recoil";
 import { userstate } from "./store/userState.ts";
-import Loading from "./Components/Loading.tsx";
+import Loading from "./Components/NewLoading.tsx";
 import { Suspense } from "react";
-import Navbar from "./Components/Navbar.tsx";
-import NotFound from "./Components/NotFound.tsx";
+import Navbar from "./Components/NewNavbar.tsx";
+import NewNotFound from "./Components/NewNotFound.tsx";
 import Profileview from "./Components/Profileview.tsx";
 import Projectsv2 from "./pages/Projectsv2.tsx";
+import ProjectDetails from "./pages/ProjectDetails.tsx";
+
 const App = () => {
   const user = useRecoilValueLoadable(userstate);
 
@@ -28,30 +30,30 @@ const App = () => {
   }
 
   return (
-    <div className="relative flex">
+    <div>
       <BrowserRouter>
         <Suspense fallback={<Loading />}>
-          <div className="fixed top-0 z-50 w-screen">
-            <Navbar />
+          <Navbar />
+          <div>
+            <Routes>
+              <Route path="/proposals" element={<Proposal />} />
+              <Route path="/myprojects" element={<Myprojects />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/pastprogram" element={<Programs />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/mentors" element={<Mentors />} />
+              <Route path="/projects" element={<Projectsv2 />} />
+              <Route path="/projects/:id" element={<ProjectDetails />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/ideas" element={<Idea />} />
+              <Route path="/how-it-works" element={<Timeline />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<AdminPortal />} />
+              <Route path="/addproject" element={<ProjectForm />} />
+              <Route path="*" element={<NewNotFound />} />
+              <Route path="/profileview" element={<Profileview />} />
+            </Routes>
           </div>
-          <Routes>
-            <Route path="/proposals" element={<Proposal />} />
-            <Route path="/myprojects" element={<Myprojects />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/pastprogram" element={<Programs />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/mentors" element={<Mentors />} />
-            <Route path="/projects" element={<Projectsv2 />} />
-            <Route path="/help" element={<Help />} />
-            <Route path="/ideas" element={<Idea />} />
-            <Route path="/how-it-works" element={<Timeline />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<AdminPortal />} />
-            <Route path="/addproject" element={<ProjectForm />} />
-            <Route path="*" element={<NotFound />} />
-            <Route path="/profileview" element={<Profileview />} />
-
-          </Routes>
         </Suspense>
       </BrowserRouter>
     </div>
@@ -59,3 +61,4 @@ const App = () => {
 };
 
 export default App;
+

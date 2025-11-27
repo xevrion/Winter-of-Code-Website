@@ -10,6 +10,7 @@ export default defineConfig({
     ],
     // configure were stuff goes here
     paths: {
-        components: './src/components/ui'
+        components: './src/components/ui',
+		component: './src/components'
     },
 });

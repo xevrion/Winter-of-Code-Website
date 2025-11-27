@@ -20,7 +20,7 @@ import Navbar from "./Components/NewNavbar.tsx";
 import NewNotFound from "./Components/NewNotFound.tsx";
 import Profileview from "./Components/Profileview.tsx";
 import Projectsv2 from "./pages/Projectsv2.tsx";
-import ProjectDetails from "./pages/ProjectDetails.tsx";
+
 
 const App = () => {
   const user = useRecoilValueLoadable(userstate);
@@ -43,7 +43,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/mentors" element={<Mentors />} />
               <Route path="/projects" element={<Projectsv2 />} />
-              <Route path="/projects/:id" element={<ProjectDetails />} />
+
               <Route path="/help" element={<Help />} />
               <Route path="/ideas" element={<Idea />} />
               <Route path="/how-it-works" element={<Timeline />} />

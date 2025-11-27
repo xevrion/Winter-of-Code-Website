@@ -201,7 +201,7 @@ const ProjectModal = ({
                           {(() => {
                             const mentors = Array.isArray(project.mentor)
                               ? project.mentor
-                              : typeof project.mentor === 'string'
+                              : typeof project.mentor === "string"
                               ? project.mentor.split(",")
                               : [];
 
@@ -410,6 +410,8 @@ const Projectsv2 = () => {
 
   return (
     <div className="bg-deep-night text-frost-white min-h-screen relative overflow-x-hidden">
+      
+      
       <div className="relative z-10 container mx-auto px-6 py-12">
         {woc_state ? (
           <>

@@ -18,7 +18,7 @@ const Home = () => {
   return (
     <div className={`overflow-x-hidden ${toggle === null ? "" : toggle ? "contract" : "expand"}`}>
       <div
-        className="flex flex-col justify-center items-center relative overflow-hidden h-[479px] bg-cover"
+        className="flex flex-col justify-center items-center relative overflow-hidden h-[590px] bg-cover"
         style={{
           backgroundColor: "#111722",
           backgroundSize: "cover",
@@ -38,15 +38,15 @@ const Home = () => {
             <img
               src={devlupLogo}
               alt="DevlUp Labs Logo"
-              className="w-auto h-40 mb-8"
+              className="w-auto h-52 mb-8"
             />
 
             <div>
-              <div className="mx-0 font-sans2 text-center text-[54px] relative z-10 sm:h-[80px] font-bold bg-gradient-to-r from-[#5B8CFF] to-[#f5a836] text-transparent bg-clip-text animate-gradient">
+              <div className="mx-0 font-sans2 text-center text-[66px] relative z-10 sm:h-[80px] font-bold bg-gradient-to-r from-[#5B8CFF] to-[#f5a836] text-transparent bg-clip-text animate-gradient mb-8">
                 Winter Of Code
               </div>
 
-              <div className="mx-0 font-sans2 text-[24px] sm:text-[30px] text-center relative z-10 font-bold text-[#DCE5F5] sm:h-[80px]">
+              <div className="mx-0 font-sans2 text-[32px] sm:text-[30px] text-center relative z-10 font-bold text-[#DCE5F5] sm:h-[80px]">
                 <Typewriter
                   options={{
                     loop: true,

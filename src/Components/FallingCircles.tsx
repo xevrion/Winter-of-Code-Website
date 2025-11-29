@@ -20,10 +20,10 @@ export default function FallingCircles() {
           value: "#111722",
         },
       },
-      fpsLimit: 120,
+      fpsLimit: 60,
       particles: {
         number: {
-          value: 50,
+          value: 100,
           density: {
             enable: true,
             area: 800,
@@ -36,21 +36,52 @@ export default function FallingCircles() {
           type: "circle",
         },
         opacity: {
-          value: 0.8,
+          value: {
+            min: 0.3,
+            max: 0.8,
+          },
+          animation: {
+            enable: true,
+            speed: 1,
+            minimumValue: 0.3,
+            sync: false,
+          },
         },
         size: {
-          value: { min: 5, max: 15 },
+          value: { min: 1, max: 5 },
+          random: {
+            enable: true,
+            minimumValue: 1,
+          },
         },
         move: {
           enable: true,
-          speed: 2,
+          speed: {
+            min: 0.5,
+            max: 2,
+          },
           direction: "bottom",
           random: true,
-          straight: true,
+          straight: false,
           outModes: {
             default: "out",
             bottom: "out",
             top: "none",
+          },
+          attract: {
+            enable: false,
+          },
+          drift: {
+            min: -0.5,
+            max: 0.5,
+          },
+        },
+        wobble: {
+          enable: true,
+          distance: 10,
+          speed: {
+            min: 1,
+            max: 3,
           },
         },
       },
@@ -58,16 +89,9 @@ export default function FallingCircles() {
         events: {
           onHover: {
             enable: false,
-            mode: "repulse",
           },
           resize: {
-            enable: false,
-          },
-        },
-        modes: {
-          repulse: {
-            distance: 100,
-            duration: 0.4,
+            enable: true,
           },
         },
       },

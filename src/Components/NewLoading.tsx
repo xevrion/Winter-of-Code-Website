@@ -1,4 +1,4 @@
-import { Spinner } from '@/components/ui/spinner';
+import { Spinner } from '@/Components/ui/spinner';
 import React from 'react';
 
 const NewLoading = () => {

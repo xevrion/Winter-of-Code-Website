@@ -12,7 +12,7 @@ import Myprojects from "./Components/Myprojects.tsx";
 import Proposal from "./Components/Proposals.tsx";
 import AdminPortal from "./Components/Adminportal.tsx";
 import ProjectForm from "./Components/Projectform.tsx";
-import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
+import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
 import { refreshUserState, userstate } from "./store/userState.ts";
 import Loading from "./Components/NewLoading.tsx";
 import { Suspense, useEffect } from "react";
@@ -21,27 +21,27 @@ import NewNotFound from "./Components/NewNotFound.tsx";
 import Profileview from "./Components/Profileview.tsx";
 import Projectsv2 from "./pages/Projectsv2.tsx";
 
-
 const App = () => {
-  // const user = useRecoilValueLoadable(userstate);
-
-  // if (user.state === "loading") {
-  //   return <Loading />;
-  // }
-  const user = useRecoilValue(userstate);
   const setUser = useSetRecoilState(userstate);
   const refresh = useRecoilValueLoadable(refreshUserState);
 
   useEffect(() => {
     if (refresh.state === "hasValue") {
       setUser(refresh.contents);
+    } else if (refresh.state === "hasError") {
+      console.error("Failed to refresh user:", refresh.contents);
+      // Set user to null or handle error appropriately
+      setUser(null);
     }
-  }, [refresh.state]);
+  }, [refresh.state, refresh.contents, setUser]);
 
-  if (user === null) {
-    return <Loading />; // only when no cached user
+  // Show loading only while actively fetching user data
+  if (refresh.state === "loading") {
+    return <Loading />;
   }
 
+  // After loading completes (success or error), render the app
+  // Individual routes/components will handle authentication checks
   return (
     <div>
       <BrowserRouter>
@@ -56,15 +56,14 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/mentors" element={<Mentors />} />
               <Route path="/projects" element={<Projectsv2 />} />
-
               <Route path="/help" element={<Help />} />
               <Route path="/ideas" element={<Idea />} />
               <Route path="/how-it-works" element={<Timeline />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminPortal />} />
               <Route path="/addproject" element={<ProjectForm />} />
-              <Route path="*" element={<NewNotFound />} />
               <Route path="/profileview" element={<Profileview />} />
+              <Route path="*" element={<NewNotFound />} />
             </Routes>
           </div>
         </Suspense>
@@ -74,4 +73,3 @@ const App = () => {
 };
 
 export default App;
-

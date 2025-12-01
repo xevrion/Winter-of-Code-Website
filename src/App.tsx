@@ -20,6 +20,7 @@ import Navbar from "./Components/NewNavbar.tsx";
 import NewNotFound from "./Components/NewNotFound.tsx";
 import Profileview from "./Components/Profileview.tsx";
 import Projectsv2 from "./pages/Projectsv2.tsx";
+import HelpContactv2 from "./pages/HelpContactv2.tsx";
 
 const App = () => {
   const setUser = useSetRecoilState(userstate);
@@ -30,12 +31,10 @@ const App = () => {
       setUser(refresh.contents);
     } else if (refresh.state === "hasError") {
       console.error("Failed to refresh user:", refresh.contents);
-      // Set user to null or handle error appropriately
       setUser(null);
     }
   }, [refresh.state, refresh.contents, setUser]);
 
-  // Show loading only while actively fetching user data
   if (refresh.state === "loading") {
     return <Loading />;
   }
@@ -56,7 +55,7 @@ const App = () => {
               <Route path="/" element={<Home />} />
               <Route path="/mentors" element={<Mentors />} />
               <Route path="/projects" element={<Projectsv2 />} />
-              <Route path="/help" element={<Help />} />
+              <Route path="/help" element={<HelpContactv2 />} />
               <Route path="/ideas" element={<Idea />} />
               <Route path="/how-it-works" element={<Timeline />} />
               <Route path="/profile" element={<Profile />} />

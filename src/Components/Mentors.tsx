@@ -1,7 +1,4 @@
-import Avatar from "../assets/avatar.png";
-import { IoMail } from "react-icons/io5";
-import { FaGithub } from "react-icons/fa6";
-import { FaWhatsapp } from "react-icons/fa";
+import { motion } from "framer-motion";
 import { useRecoilValue, useRecoilValueLoadable } from "recoil";
 import { togglestate } from "../store/toggle";
 import ProfileCard from "@/imported_components/ProfileCard";
@@ -9,6 +6,7 @@ import { wocstate } from "../store/woc";
 import { Mentor } from "../types/mentor"
 import Loading from "./Loading";
 import { mentorstate } from "../store/mentor";//format is id, 
+import "../index.css"
 const Mentors = () => {
   const toggle = useRecoilValue(togglestate);
   const mentors_state = useRecoilValueLoadable(mentorstate);
@@ -24,7 +22,8 @@ const Mentors = () => {
           className={` overflow-hidden ${toggle === null ? "" : toggle ? "contract" : "expand"}`}
         >
           <div className="flex justify-center ">
-            <div className="bg-white md2:w-[808px]  shadow-custom md2:absolute md2:top-32   z-0  ">
+            <div className=" w-full h-full">
+              <div className="my-32"></div>
               {/* <div className="italic m-5">
               You can also pitch your own project idea to these mentors. Feel
               free to contact any mentor via email/phone and talk to them about
@@ -35,30 +34,51 @@ const Mentors = () => {
               {woc_state ?
                 (
                   <>
-                    <div className="mt-32 text-[64px] text-[#FFFFFF]"></div>
-                    {mentors &&
-                      mentors.length > 0 &&
-                      mentors.map((x: Mentor) => (
-                        x.mentor_name.map((val, key) => (
-                          <ProfileCard image_link={x.image_link[key]}
-                            mentor_name={val}
-                            about={x.about[key]}
-                            linkedinID={x.linkedin[key]}
-                            githubID={x.github[key]}
-                            key={key}/>
-                ))
-                      ))}
+                  <div className="text-4xl font-extrabold my-3 w-full text-center bg-gradient-to-r from-black via-blue-100 to-orange-400 bg-clip-text text-transparent mb-24 sm:mb-8 ">About our Mentors</div>
+                    <div className="flex flex-wrap justify-center">
+                      {mentors &&
+                        mentors.length > 0 &&
+                        mentors.map((x: Mentor) => (
+                          <>
+                            <div className="text-3xl font-extrabold my-3 w-full text-center bg-gradient-to-r from-black via-sky-500 to-orange-400 bg-clip-text text-transparent animate-gradient">
+                              {x.proj_name}
+                            </div>
+
+                            {x.mentor_name.map((val, key) => (
+                              <motion.div
+                                key={key}
+                                initial={{ opacity: 0, y: 60 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
+                                viewport={{ once: true }}
+                              >
+                                <ProfileCard
+                                  key={key}
+                                  image_link={x.image_link[key]}
+                                  mentor_name={val}
+                                  about={x.about[key]}
+                                  linkedinID={x.linkedin[key]}
+                                  githubID={x.github[key]}
+
+                                />
+                                </motion.div>
+                            ))}
+                              </>
+                            ))
+
+                            }
+                          </div >
                   </>
-                ) : (
-                  <div className="flex justify-center m-5 text-[30px] font-stylish font-bold ">
-                    WOC Has Not Started Yet
-                  </div>
+                    ) : (
+                    <div className="flex justify-center m-5 text-[30px] font-stylish font-bold ">
+                      WOC Has Not Started Yet
+                    </div>
                 )}
+                  </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+        );
   }
 };
-export default Mentors;
+        export default Mentors;

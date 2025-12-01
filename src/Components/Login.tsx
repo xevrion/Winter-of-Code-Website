@@ -12,8 +12,8 @@ const Login = () => {
   const toggle = useRecoilValue(togglestate);
   const [user, setuser] = useRecoilState(userstate);
   const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
-  const login=()=>{
-    
+  const login = () => {
+
   }
   const googleLogin = useGoogleLogin({
     onSuccess: async ({ code }) => {
@@ -96,21 +96,15 @@ const Login = () => {
             <div className="flex-1 h-[1px] bg-white/20"></div>
           </div>
           <button
-            onClick={googleLogin}
-            className="w-full mt-2"
+            onClick={() => googleLogin()}
+            className="w-full mt-2 flex items-center justify-center gap-3 bg-white text-black font-semibold py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
           >
-            <button
-              onClick={() => googleLogin()}
-              className="w-full flex items-center justify-center gap-3 bg-white text-black font-semibold py-3 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
-            >
-              <img
-                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                alt="Google Logo"
-                className="w-5 h-5"
-              />
-              <span>Sign in with Google</span>
-            </button>
-
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt="Google Logo"
+              className="w-5 h-5"
+            />
+            <span>Sign in with Google</span>
           </button>
 
         </Card>

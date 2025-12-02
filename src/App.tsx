@@ -39,6 +39,8 @@ const App = () => {
     return <Loading />;
   }
 
+  // After loading completes (success or error), render the app
+  // Individual routes/components will handle authentication checks
   return (
     <div>
       <BrowserRouter>

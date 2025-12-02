@@ -12,17 +12,26 @@ import Myprojects from "./Components/Myprojects.tsx";
 import Proposal from "./Components/Proposals.tsx";
 import AdminPortal from "./Components/Adminportal.tsx";
 import ProjectForm from "./Components/Projectform.tsx";
-import { useRecoilValueLoadable, useSetRecoilState } from "recoil";
+
+import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from "recoil";
 import { refreshUserState, userstate } from "./store/userState.ts";
+
 import Loading from "./Components/NewLoading.tsx";
 import { Suspense, useEffect } from "react";
 import Navbar from "./Components/NewNavbar.tsx";
 import NewNotFound from "./Components/NewNotFound.tsx";
 import Profileview from "./Components/Profileview.tsx";
 import Projectsv2 from "./pages/Projectsv2.tsx";
+
 import HelpContactv2 from "./pages/HelpContactv2.tsx";
+import PastProgramv2 from "./pages/pastprogramv2.tsx";
+
 
 const App = () => {
+  // NEW: synchronous user load (from PR)
+  const user = useRecoilValue(userstate);
+
+  // Your logic + her logic merged cleanly
   const setUser = useSetRecoilState(userstate);
   const refresh = useRecoilValueLoadable(refreshUserState);
 
@@ -35,12 +44,11 @@ const App = () => {
     }
   }, [refresh.state, refresh.contents, setUser]);
 
+  // Keep the correct loading gate from main
   if (refresh.state === "loading") {
     return <Loading />;
   }
 
-  // After loading completes (success or error), render the app
-  // Individual routes/components will handle authentication checks
   return (
     <div>
       <BrowserRouter>
@@ -51,11 +59,17 @@ const App = () => {
               <Route path="/proposals" element={<Proposal />} />
               <Route path="/myprojects" element={<Myprojects />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/pastprogram" element={<Programs />} />
+
+              {/* NEW updated past programs */}
+              <Route path="/pastprogram" element={<PastProgramv2 />} />
+
               <Route path="/" element={<Home />} />
               <Route path="/mentors" element={<Mentors />} />
               <Route path="/projects" element={<Projectsv2 />} />
+
+              {/* Correct help route */}
               <Route path="/help" element={<HelpContactv2 />} />
+
               <Route path="/ideas" element={<Idea />} />
               <Route path="/how-it-works" element={<Timeline />} />
               <Route path="/profile" element={<Profile />} />

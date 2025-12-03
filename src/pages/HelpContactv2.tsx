@@ -3,9 +3,8 @@ import { FaGithub } from "react-icons/fa";
 import { BiLogoDiscord } from "react-icons/bi";
 import { IoMail } from "react-icons/io5";
 import { motion, AnimatePresence } from "framer-motion";
-
-const CARD_BG = "bg-[#1A2333]"; // card background
-const PAGE_BG = "bg-[#0A0D12]"; // page background
+import { useRecoilValue } from "recoil";
+import { togglestate } from "../store/toggle";
 
 const contactItems = [
   {
@@ -14,15 +13,15 @@ const contactItems = [
     subtitle: "@devlup-labs",
     href: "https://github.com/devlup-labs",
     cta: "Visit",
-    icon: <FaGithub className="text-[#C9D1D9] w-6 h-6" />,
+    icon: <FaGithub className="text-frost-white w-5 h-5 sm:w-6 sm:h-6" />,
   },
   {
     id: "discord",
     title: "Discord",
     subtitle: "DevelupLab",
-    href: "https://github.com/devlup-labs", // replace with real discord invite if available
+    href: "https://github.com/devlup-labs",
     cta: "Join",
-    icon: <BiLogoDiscord className="text-[#C9D1D9] w-6 h-6" />,
+    icon: <BiLogoDiscord className="text-frost-white w-5 h-5 sm:w-6 sm:h-6" />,
   },
   {
     id: "email",
@@ -30,7 +29,7 @@ const contactItems = [
     subtitle: "devluplabs@iitj.ac.in",
     href: "mailto:devluplabs@iitj.ac.in",
     cta: "Mail",
-    icon: <IoMail className="text-[#C9D1D9] w-6 h-6" />,
+    icon: <IoMail className="text-frost-white w-5 h-5 sm:w-6 sm:h-6" />,
   },
 ];
 
@@ -78,17 +77,16 @@ const mentorFaqs = [
 
 export default function Help() {
   const [openIndex, setOpenIndex] = useState({ section: "students", idx: -1 });
+  const toggle = useRecoilValue(togglestate);
 
-  const toggleOpen = (section:string, idx:number) => {
-  setOpenIndex((s) =>
-    s.section === section && s.idx === idx
-      ? { section, idx: -1 }
-      : { section, idx }
-  );
-};
+  const toggleOpen = (section: string, idx: number) => {
+    setOpenIndex((s) =>
+      s.section === section && s.idx === idx
+        ? { section, idx: -1 }
+        : { section, idx }
+    );
+  };
 
-
-  // animation variants
   const panelVariants = {
     hidden: { height: 0, opacity: 0 },
     visible: { height: "auto", opacity: 1 },
@@ -96,63 +94,125 @@ export default function Help() {
   };
 
   return (
-    <div className={`${PAGE_BG} min-h-screen text-[#DCE5F5]`}>
-      <div className="max-w-6xl mx-auto px-6 py-20">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div className="flex-1">
-            <h1
-              className="
-                text-3xl md:text-[50px] font-extrabold leading-tight
-                bg-gradient-to-b from-[#DCE5F5] to-[#00C6FF]
-                text-transparent bg-clip-text
-              "
-            >
-              Frequently Asked Questions
+    <div
+      className={`bg-deep-night min-h-screen text-frost-white ${
+        toggle === null ? "" : toggle ? "contract" : "expand"
+      }`}
+    >
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex-1"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ice-surge/10 border border-ice-surge/20 text-ice-surge text-xs font-medium mb-4">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ice-surge opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-ice-surge"></span>
+              </span>
+              Support
+            </div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-4">
+              <span className="text-frost-white">Frequently Asked </span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-ice-surge to-frost-ember">
+                Questions
+              </span>
             </h1>
+            <p className="text-cloud-gray text-base sm:text-lg max-w-xl">
+              Find answers for students and mentors — reach out if you still
+              need help.
+            </p>
+          </motion.div>
 
-            <p className="mt-3 text-[#9AA4B8] md:text-[20px]">Find answers for students and mentors — reach out if you still need help.</p>
-          </div>
-
-          {/* Contact cards */}
-          <aside className="w-full md:w-72 hidden md:block">
-            <h2
-              className="
-                text-2xl md:text-3xl font-bold mb-3
-                bg-gradient-to-b from-[#E6F0FF] to-[#00C6FF]
-                text-transparent bg-clip-text
-              "
-            >
+          {/* Contact Cards - Desktop */}
+          <motion.aside
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="hidden lg:block w-72"
+          >
+            <h2 className="text-xl font-bold text-frost-white mb-4">
               Contact Us
             </h2>
-
-            <div className="grid gap-3">
+            <div className="space-y-3">
               {contactItems.map((c) => (
                 <a
                   key={c.id}
                   href={c.href}
                   target={c.href.startsWith("http") ? "_blank" : undefined}
                   rel={c.href.startsWith("http") ? "noreferrer" : undefined}
-                  className={`flex items-center gap-3 p-3 rounded-lg ${CARD_BG} border border-[#1F2A38] hover:bg-black transition-colors duration-200`}
+                  className="flex items-center gap-3 p-3 glass-card rounded-xl hover:border-ice-surge/30 transition-all duration-300"
                 >
-                  <div className="w-11 h-11 rounded-md bg-[#00C6FF] flex items-center justify-center shadow-inner" aria-hidden>
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-ice-surge to-frost-ember flex items-center justify-center">
                     {c.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-[#E6F0FF] truncate">{c.title}</div>
-                    <div className="text-xs text-[#9AA4B8] mt-0.5 truncate">{c.subtitle}</div>
+                    <div className="font-semibold text-frost-white text-sm truncate">
+                      {c.title}
+                    </div>
+                    <div className="text-xs text-cloud-gray truncate">
+                      {c.subtitle}
+                    </div>
                   </div>
-                  <div className="text-xs bg-[#071428] px-2 py-1 rounded-md text-[#BFDFFF]">{c.cta}</div>
+                  <div className="text-xs bg-arctic-steel px-2 py-1 rounded-md text-ice-surge border border-ice-surge/20">
+                    {c.cta}
+                  </div>
                 </a>
               ))}
             </div>
-          </aside>
+          </motion.aside>
         </div>
 
-        {/* Student FAQs */}
-        <section className="mt-12">
-          <h3 className="text-sm text-[#9AA4B8] mb-3 md:text-[20px]">Student FAQs</h3>
+        {/* Contact Cards - Mobile */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="lg:hidden mb-10"
+        >
+          <h2 className="text-lg font-bold text-frost-white mb-3">
+            Contact Us
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {contactItems.map((c) => (
+              <a
+                key={c.id}
+                href={c.href}
+                target={c.href.startsWith("http") ? "_blank" : undefined}
+                rel={c.href.startsWith("http") ? "noreferrer" : undefined}
+                className="flex items-center gap-3 p-3 glass-card rounded-xl"
+              >
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-ice-surge to-frost-ember flex items-center justify-center flex-shrink-0">
+                  {c.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-frost-white text-sm truncate">
+                    {c.title}
+                  </div>
+                  <div className="text-xs text-cloud-gray truncate">
+                    {c.subtitle}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </motion.div>
 
-          <div className="grid gap-3">
+        {/* Student FAQs */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-10"
+        >
+          <h3 className="text-lg font-semibold text-frost-white mb-4">
+            Student FAQs
+          </h3>
+          <div className="space-y-3">
             {studentFaqs.map((f, i) => (
               <div
                 key={`student-${i}`}
@@ -160,18 +220,27 @@ export default function Help() {
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") toggleOpen("students", i);
+                  if (e.key === "Enter" || e.key === " ")
+                    toggleOpen("students", i);
                 }}
-                aria-expanded={openIndex.section === "students" && openIndex.idx === i}
-                className={`${CARD_BG} border border-[#9AA4B8] hover:bg-black rounded-3xl p-4 group overflow-hidden transition-all duration-300 cursor-pointer`}
+                aria-expanded={
+                  openIndex.section === "students" && openIndex.idx === i
+                }
+                className="glass-card rounded-xl p-4 cursor-pointer hover:border-ice-surge/30 transition-all duration-300"
               >
-                <div className="w-full text-left flex items-center justify-between list-none font-semibold text-[#E6F0FF]">
-                  <span className="truncate">{f.q}</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-frost-white text-sm sm:text-base pr-4">
+                    {f.q}
+                  </span>
                   <motion.span
-                    animate={{ rotate: openIndex.section === "students" && openIndex.idx === i ? 180 : 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="ml-4 inline-block"
-                    aria-hidden
+                    animate={{
+                      rotate:
+                        openIndex.section === "students" && openIndex.idx === i
+                          ? 180
+                          : 0,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="text-ice-surge flex-shrink-0"
                   >
                     ⌵
                   </motion.span>
@@ -185,8 +254,8 @@ export default function Help() {
                       animate="visible"
                       exit="exit"
                       variants={panelVariants}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
-                      className="mt-3 text-[#C9D1D9] overflow-hidden text-sm sm:text-base"
+                      transition={{ duration: 0.3 }}
+                      className="mt-3 text-cloud-gray text-sm sm:text-base overflow-hidden"
                     >
                       {f.a}
                     </motion.div>
@@ -195,13 +264,19 @@ export default function Help() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* Mentor FAQs */}
-        <section className="mt-8">
-          <h3 className="text-sm text-[#9AA4B8] mb-3 md:text-[20px]">Mentor FAQs</h3>
-
-          <div className="grid gap-3">
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <h3 className="text-lg font-semibold text-frost-white mb-4">
+            Mentor FAQs
+          </h3>
+          <div className="space-y-3">
             {mentorFaqs.map((f, i) => (
               <div
                 key={`mentor-${i}`}
@@ -209,18 +284,27 @@ export default function Help() {
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") toggleOpen("mentors", i);
+                  if (e.key === "Enter" || e.key === " ")
+                    toggleOpen("mentors", i);
                 }}
-                aria-expanded={openIndex.section === "mentors" && openIndex.idx === i}
-                className={`${CARD_BG} border border-[#9AA4B8] hover:bg-black rounded-3xl p-4 group overflow-hidden transition-all duration-300 cursor-pointer`}
+                aria-expanded={
+                  openIndex.section === "mentors" && openIndex.idx === i
+                }
+                className="glass-card rounded-xl p-4 cursor-pointer hover:border-ice-surge/30 transition-all duration-300"
               >
-                <div className="w-full text-left flex items-center justify-between list-none font-semibold text-[#E6F0FF]">
-                  <span className="truncate">{f.q}</span>
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-frost-white text-sm sm:text-base pr-4">
+                    {f.q}
+                  </span>
                   <motion.span
-                    animate={{ rotate: openIndex.section === "mentors" && openIndex.idx === i ? 180 : 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="ml-4 inline-block"
-                    aria-hidden
+                    animate={{
+                      rotate:
+                        openIndex.section === "mentors" && openIndex.idx === i
+                          ? 180
+                          : 0,
+                    }}
+                    transition={{ duration: 0.3 }}
+                    className="text-ice-surge flex-shrink-0"
                   >
                     ⌵
                   </motion.span>
@@ -234,8 +318,8 @@ export default function Help() {
                       animate="visible"
                       exit="exit"
                       variants={panelVariants}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
-                      className="mt-3 text-[#C9D1D9] overflow-hidden text-sm sm:text-base"
+                      transition={{ duration: 0.3 }}
+                      className="mt-3 text-cloud-gray text-sm sm:text-base overflow-hidden"
                     >
                       {f.a}
                     </motion.div>
@@ -244,8 +328,15 @@ export default function Help() {
               </div>
             ))}
           </div>
-        </section>
+        </motion.section>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-white/5 py-8">
+        <p className="text-center text-xs sm:text-sm text-cloud-gray/60">
+          © 2025 Winter of Code. Crafted with frost & code.
+        </p>
+      </footer>
     </div>
   );
 }

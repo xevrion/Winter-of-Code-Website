@@ -1,45 +1,50 @@
 import React, { useState } from "react";
-import { useRecoilValue,useRecoilState} from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { togglestate } from "../store/toggle";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { userstate } from "../store/userState";
-import { TextField ,Box,Button} from "@mui/material";
+import { motion } from "framer-motion";
+import { FaGithub, FaPhone, FaUser, FaGraduationCap } from "react-icons/fa";
+import { HiOutlineArrowUpRight } from "react-icons/hi2";
+
 const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+
 const Profileview: React.FC = () => {
   const [user, setuser] = useRecoilState(userstate);
+
   useEffect(() => {
     const getuser = async () => {
       if (user) {
-          try {
-              const token = localStorage.getItem('jwt_token');
-              const userinfo = await axios.get(`${BASE_URL}/userinfo/${user.id}`
-              , {
-                  headers: {
-                      'Authorization': `Bearer ${token}` 
-                  }
-              });
-              if (userinfo.data.success != "true") {
-                setFirstName(user.first_name);
-                setLastName(user.last_name);
-              } else {
-                setFirstName(userinfo.data.user.first_name);
-                setLastName(userinfo.data.user.last_name);
-                setSelectedBranch(userinfo.data.user.branch);
-                setGithubLink(userinfo.data.user.githublink);
-                setPhoneNumber(userinfo.data.user.phonenumber);
-                setSelectedGender(userinfo.data.user.gender);
-                setSelectedYear(userinfo.data.user.year);
-                localStorage.setItem("jwt_token",userinfo.data.token);
-              }
-          } catch (error) {
-              console.error("Error fetching user info:", error);
+        try {
+          const token = localStorage.getItem("jwt_token");
+          const userinfo = await axios.get(`${BASE_URL}/userinfo/${user.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (userinfo.data.success != "true") {
+            setFirstName(user.first_name);
+            setLastName(user.last_name);
+          } else {
+            setFirstName(userinfo.data.user.first_name);
+            setLastName(userinfo.data.user.last_name);
+            setSelectedBranch(userinfo.data.user.branch);
+            setGithubLink(userinfo.data.user.githublink);
+            setPhoneNumber(userinfo.data.user.phonenumber);
+            setSelectedGender(userinfo.data.user.gender);
+            setSelectedYear(userinfo.data.user.year);
+            localStorage.setItem("jwt_token", userinfo.data.token);
           }
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+        }
       }
-  };
+    };
     getuser();
   }, [user]);
+
   const navigate = useNavigate();
   const toggle = useRecoilValue(togglestate);
 
@@ -51,207 +56,175 @@ const Profileview: React.FC = () => {
   const [githubLink, setGithubLink] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
 
+  const getBranchName = (code: string) => {
+    const branches: Record<string, string> = {
+      ch: "Chemical Engineering",
+      ai: "Artificial Intelligence and Data Science",
+      ee: "Electrical Engineering",
+      me: "Mechanical Engineering",
+      cse: "Computer Science and Engineering",
+      ci: "Civil Engineering",
+      mt: "Materials Engineering",
+      bsbe: "Bioscience and Biotechnology",
+      es: "Engineering Science",
+      ph: "Bachelor of Science (Physics)",
+      cy: "Bachelor of Science (Chemistry)",
+      other: "Other",
+    };
+    return branches[code] || code;
+  };
+
+  const getYearName = (year: string) => {
+    const years: Record<string, string> = {
+      "1": "1st Year",
+      "2": "2nd Year",
+      "3": "3rd Year",
+      "4": "4th Year",
+    };
+    return years[year] || year;
+  };
 
   return (
     <div
-      className={`overflow-x-hidden ${toggle === null ? "" : toggle ? "contract" : "expand"}`}
+      className={`overflow-x-hidden min-h-screen bg-deep-night ${
+        toggle === null ? "" : toggle ? "contract" : "expand"
+      }`}
     >
-      <div
-        className=" flex justify-center md2:h-[180px] h-[120px] w-screen md2:absolute md2:top-0 md2:left-0 z-1 "
-        style={{ backgroundColor: "#1976d2" }}
-      ></div>
-      <div className=" md2:my-[120px] bg-white md2:w-[808px] shadow-custom md2:absolute md2:top-0 md2:right-1/2 md2:transform md2:translate-x-1/2 z-0">
-        <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-          <div
-            className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Profile
-            </h2>
-            <p className="mt-2 text-lg leading-8 text-gray-600">
-              Your Winter of Code's Official Account Details
-            </p>
-          </div>
-          <form
-            action="#"
-            method="POST"
-            className="mx-auto mt-16 max-w-xl sm:mt-20"
-          >
-            <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  First name
-                </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autoComplete="given-name"
-                    value={firstName}
-                    defaultValue={firstName}
-                    InputProps={{ readOnly: true }}
-                    required
-                  />
+      {/* Header */}
+      <div className="relative h-[120px] sm:h-[180px] w-full bg-gradient-to-r from-arctic-steel via-cold-slate to-arctic-steel">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-deep-night/50"></div>
+      </div>
+
+      {/* Profile Container */}
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-24 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="glass-panel rounded-2xl overflow-hidden"
+        >
+          {/* Profile Header */}
+          <div className="bg-gradient-to-r from-ice-surge/10 to-frost-ember/10 p-6 sm:p-8 border-b border-white/5">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r from-ice-surge to-frost-ember p-0.5">
+                <div className="w-full h-full rounded-full bg-arctic-steel flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl font-bold text-frost-white">
+                    {firstName.charAt(0)}
+                    {lastName.charAt(0)}
+                  </span>
                 </div>
               </div>
               <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Last name
-                </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="text"
-                    InputProps={{ readOnly: true }}
-                    name="last-name"
-                    id="last-name"
-                    required
-                    autoComplete="family-name"
-                    value={lastName}
-                    defaultValue={lastName}
-                  />
+                <h1 className="text-xl sm:text-2xl font-bold text-frost-white">
+                  {firstName} {lastName}
+                </h1>
+                <p className="text-cloud-gray text-sm sm:text-base">
+                  Winter of Code Participant
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Profile Details */}
+          <div className="p-6 sm:p-8 space-y-6">
+            {/* Info Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Year */}
+              <div className="glass rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-ice-surge/10 flex items-center justify-center">
+                    <FaGraduationCap className="text-ice-surge" />
+                  </div>
+                  <div>
+                    <p className="text-cloud-gray text-xs">Year</p>
+                    <p className="text-frost-white font-medium">
+                      {getYearName(selectedYear) || "Not specified"}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="years"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Year
-                </label>
-                <select
-                  id="years"
-                  name="selectedYear"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  value={selectedYear}
-                  defaultValue={selectedYear}
-                  disabled
-                >
-                  <option value="0">Year</option>
-                  <option value="1">1st Year</option>
-                  <option value="2">2nd Year</option>
-                  <option value="3">3rd Year</option>
-                  <option value="4">4th Year</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="gender"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Gender
-                </label>
-                <select
-                  id="gender"
-                  name="selectedGender"
-                  defaultValue={selectedGender}
-                  value={selectedGender}
-                  disabled
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                >
-                  <option value="">Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="branches"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Branch
-                </label>
-                <select
-                  id="branches"
-                  name="selectedBranch"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  defaultValue={selectedBranch}
-                  value={selectedBranch}
-                  disabled
-                >
-                  <option value="">Branch</option>
-                  <option value="ch">Chemical Engineering</option>
-                  <option value="ai">
-                    Artificial Intelligence and Data Science
-                  </option>
-                  <option value="ee">Electrical Engineering</option>
-                  <option value="me">Mechanical Engineering</option>
-                  <option value="cse">Computer Science and Engineering</option>
-                  <option value="ci">Civil Engineering</option>
-                  <option value="mt">Materials Engineering</option>
-                  <option value="bsbe">Bioscience and Biotechnology</option>
-                  <option value="es">Engineering Science</option>
-                  <option value="ph">Bachelor of Science (Physics)</option>
-                  <option value="cy">Bachelor of Science (Chemistry)</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="github"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Github Link
-                </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="github"
-                    name="github"
-                    id="github"
-                    autoComplete="github"
-                    InputProps={{ readOnly: true }}
-                    value={githubLink}
-                    defaultValue={githubLink}
-                    required
-                  />
+
+              {/* Gender */}
+              <div className="glass rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-frost-ember/10 flex items-center justify-center">
+                    <FaUser className="text-frost-ember" />
+                  </div>
+                  <div>
+                    <p className="text-cloud-gray text-xs">Gender</p>
+                    <p className="text-frost-white font-medium capitalize">
+                      {selectedGender || "Not specified"}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="phone-number"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Phone number
-                </label>
-                <div className="relative mt-2.5">
-                  <TextField
-                    type="tel"
-                    name="phone-number"
-                    id="phone-number"
-                    InputProps={{ readOnly: true }}
-                    autoComplete="tel"
-                    value={phoneNumber}
-                    defaultValue={phoneNumber}
-                    required
-        
-                  />
+
+              {/* Branch */}
+              <div className="glass rounded-xl p-4 sm:col-span-2">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-aurora-violet/10 flex items-center justify-center">
+                    <FaGraduationCap className="text-aurora-violet" />
+                  </div>
+                  <div>
+                    <p className="text-cloud-gray text-xs">Branch</p>
+                    <p className="text-frost-white font-medium">
+                      {getBranchName(selectedBranch) || "Not specified"}
+                    </p>
+                  </div>
                 </div>
+              </div>
+
+              {/* Phone */}
+              <div className="glass rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-cryo-mint/10 flex items-center justify-center">
+                    <FaPhone className="text-cryo-mint" />
+                  </div>
+                  <div>
+                    <p className="text-cloud-gray text-xs">Phone</p>
+                    <p className="text-frost-white font-medium">
+                      {phoneNumber || "Not specified"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Github */}
+              <div className="glass rounded-xl p-4">
+                <a
+                  href={githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                    <FaGithub className="text-frost-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-cloud-gray text-xs">GitHub</p>
+                    <p className="text-frost-white font-medium truncate group-hover:text-ice-surge transition-colors">
+                      {githubLink
+                        ? githubLink.replace("https://github.com/", "@")
+                        : "Not linked"}
+                    </p>
+                  </div>
+                  <HiOutlineArrowUpRight className="text-cloud-gray group-hover:text-ice-surge transition-colors" />
+                </a>
               </div>
             </div>
 
-            <Box mt={4} display="flex" justifyContent="center">
-                <Button variant="contained" color="primary" onClick={() => navigate("/profile")}>Update Profile</Button>
-            </Box>
-          </form>
-        </div>
+            {/* Update Button */}
+            <button
+              onClick={() => navigate("/profile")}
+              className="w-full py-3 sm:py-4 rounded-xl font-semibold text-sm sm:text-base bg-gradient-to-r from-ice-surge to-frost-ember text-deep-night hover:shadow-[0_0_30px_rgba(0,198,255,0.4)] transition-all duration-300"
+            >
+              Update Profile
+            </button>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
 };
+
 export default Profileview;

@@ -10,117 +10,109 @@ import { IoPeopleSharp, IoCodeSlash } from "react-icons/io5";
 import { FaTachometerAlt } from "react-icons/fa";
 import { FaLightbulb } from "react-icons/fa";
 import { userstate } from "../store/userState";
-const Sidebar: React.FC<{ onClose: () => void }> = () => {
-    const user = useRecoilValue(userstate)
-    const [toggle,settoggle] = useRecoilState(togglestate)
-    return (
-      <aside
-        className={`fixed md2:w-[300px] w-screen   bg-white  shadow-custom mt-16 opacity-100  ${
-          toggle === null
-            ? "hidden"
-            : toggle
-              ? "activeDrawer"
-              : "inactiveDrawer"
-        }`}
-        data-booted={true}
-      >
-        <div
-          className="py-4 pl-4 pr-8 w-300 grid gap-2"
-          style={{ fontFamily: "Verdana, Geneva, Tahoma, sans-serif" }}
-        >
-        {user?.role =="scrummaster" &&
-        (
-        <Link to={"/admin"}>
-            <div onClick={()=>settoggle(!toggle)} className="py-2 px-4 text-primary-dark hover:bg-slate-100 border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-code mr-2">
-                <MdAdminPanelSettings className="h-6 w-6 " />
-              </i>
-            Admin
-            </div>
-          </Link>
-            ) }
-          <Link to={"/"}>
-            <div onClick={()=>settoggle(!toggle)} className="hover:bg-slate-100 py-2 px-4 text-primary-dark border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-home mr-2">
-                <FaHome className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              Home
-            </div>
-          </Link>
-          <Link to={"/how-it-works"}>
-            <div onClick={()=>settoggle(!toggle)} className="hover:bg-slate-100  py-2 px-4 text-primary-dark border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-calendar mr-2">
-                <FaCalendarDays className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              How It Works
-            </div>
-          </Link>
-          <Link to={"/mentors"}>
-            <div onClick={()=>settoggle(!toggle)} className="py-2 px-4 hover:bg-slate-100 text-primary-dark border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="material-icons mr-2">
-                <IoPeopleSharp className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              Mentors
-            </div>
-          </Link>
-          <Link to={"/ideas"}>
-            <div onClick={()=>settoggle(!toggle)} className="py-2 px-4 text-primary-dark hover:bg-slate-100 border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-code mr-2">
-                <FaLightbulb className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>
-              Ideas
-            </div>
-          </Link>
-          <Link to={"/projects"}>
-            <div onClick={()=>settoggle(!toggle)} className="py-2 px-4 text-primary-dark hover:bg-slate-100 border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-code mr-2">
-                <IoCodeSlash className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              Projects
-            </div>
-          </Link>
-          {user && user.role == "1" ? (
-            <Link to={"/myprojects"}>
-              <div  onClick={()=>settoggle(!toggle)} className="py-2 px-4 text-primary-dark border-l-4 hover:bg-slate-100 border-primary-dark flex align-middle gap-2">
-                <i className="fa fa-tachometer mr-2">
-                  <FaTachometerAlt className="h-6 w-6 text-gray-700 stroke-1" />
-                </i>{" "}
-                MyProjects
-              </div>
-            </Link>
-          ) : (
-            user &&
-            (user.role == "2" || user.role =="scrummaster") && (
-              <Link to={"/proposals"}>
-                <div onClick={()=>settoggle(!toggle)}  className="py-2 px-4 text-primary-dark border-l-4 hover:bg-slate-100 border-primary-dark flex align-middle gap-2">
-                  <i className="fa fa-tachometer mr-2">
-                    <FaTachometerAlt className="h-6 w-6 text-gray-700 stroke-1" />
-                  </i>{" "}
-                  Proposals
-                </div>
-              </Link>
-            )
-          )}
-          <Link to={"/pastprogram"}>
-            <div onClick={()=>settoggle(!toggle)} className="py-2 px-4 text-primary-dark hover:bg-slate-100 border-l-4 border-primary-dark flex align-middle gap-2">
-              <i className="fa fa-code mr-2">
-                <MdContentPasteSearch className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              PastProgram
-            </div>
-          </Link>
+import { IoClose } from "react-icons/io5";
 
-          <Link to={"/help"}>
-            <div onClick={()=>settoggle(!toggle)} className=" hover:text-blue-500 py-2 px-4 text-primary-dark border-l-4 hover:bg-slate-100 border-primary-dark flex align-middle gap-2">
-              <i className="material-icons mr-2">
-                <IoMdHelpCircle className="h-6 w-6 text-gray-700 stroke-1" />
-              </i>{" "}
-              Help
+const Sidebar: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  const user = useRecoilValue(userstate);
+  const [toggle, settoggle] = useRecoilState(togglestate);
+
+  const navItems = [
+    { to: "/", icon: <FaHome />, label: "Home" },
+    { to: "/how-it-works", icon: <FaCalendarDays />, label: "How It Works" },
+    { to: "/mentors", icon: <IoPeopleSharp />, label: "Mentors" },
+    { to: "/ideas", icon: <FaLightbulb />, label: "Ideas" },
+    { to: "/projects", icon: <IoCodeSlash />, label: "Projects" },
+    { to: "/pastprogram", icon: <MdContentPasteSearch />, label: "Past Programs" },
+    { to: "/help", icon: <IoMdHelpCircle />, label: "Help" },
+  ];
+
+  return (
+    <aside
+      className={`fixed md2:w-[300px] w-full h-screen bg-arctic-steel border-r border-white/10 shadow-2xl mt-0 z-50 ${
+        toggle === null
+          ? "hidden"
+          : toggle
+          ? "activeDrawer"
+          : "inactiveDrawer"
+      }`}
+      data-booted={true}
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-white/10">
+        <span className="text-frost-white font-bold text-lg">Menu</span>
+        <button
+          onClick={() => settoggle(!toggle)}
+          className="p-2 rounded-lg hover:bg-white/5 transition-colors"
+        >
+          <IoClose className="w-5 h-5 text-frost-white" />
+        </button>
+      </div>
+
+      {/* Navigation */}
+      <div className="py-4 px-3 space-y-1">
+        {/* Admin Link */}
+        {user?.role === "scrummaster" && (
+          <Link to="/admin">
+            <div
+              onClick={() => settoggle(!toggle)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-frost-white hover:bg-ice-surge/10 border-l-4 border-transparent hover:border-ice-surge transition-all duration-200"
+            >
+              <MdAdminPanelSettings className="h-5 w-5 text-ice-surge" />
+              <span className="font-medium">Admin</span>
             </div>
           </Link>
-        </div>
-        <div className="border-t border-gray-200"></div>
-      </aside>
-    );
-  };
-  export default Sidebar
+        )}
+
+        {/* Main Navigation Items */}
+        {navItems.map((item) => (
+          <Link key={item.to} to={item.to}>
+            <div
+              onClick={() => settoggle(!toggle)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-frost-white hover:bg-ice-surge/10 border-l-4 border-transparent hover:border-ice-surge transition-all duration-200"
+            >
+              <span className="text-cloud-gray text-lg">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
+            </div>
+          </Link>
+        ))}
+
+        {/* Conditional Items */}
+        {user && user.role === "1" && (
+          <Link to="/myprojects">
+            <div
+              onClick={() => settoggle(!toggle)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-frost-white hover:bg-ice-surge/10 border-l-4 border-transparent hover:border-ice-surge transition-all duration-200"
+            >
+              <FaTachometerAlt className="h-5 w-5 text-cloud-gray" />
+              <span className="font-medium">My Projects</span>
+            </div>
+          </Link>
+        )}
+
+        {user && (user.role === "2" || user.role === "scrummaster") && (
+          <Link to="/proposals">
+            <div
+              onClick={() => settoggle(!toggle)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-frost-white hover:bg-ice-surge/10 border-l-4 border-transparent hover:border-ice-surge transition-all duration-200"
+            >
+              <FaTachometerAlt className="h-5 w-5 text-cloud-gray" />
+              <span className="font-medium">Proposals</span>
+            </div>
+          </Link>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="mx-4 border-t border-white/10"></div>
+
+      {/* Footer Info */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10">
+        <p className="text-xs text-cloud-gray/60 text-center">
+          Winter of Code 2025
+        </p>
+      </div>
+    </aside>
+  );
+};
+
+export default Sidebar;

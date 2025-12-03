@@ -1,13 +1,11 @@
-
-import React, { useState, ReactNode } from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useState } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { Avatar, Button, Menu, MenuItem, Snackbar, IconButton } from "@mui/material";
-import { RxHamburgerMenu } from "react-icons/rx";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import { userstate } from "../store/userState";
-import {useGoogleAuth} from "../hooks/googleLogin";
+import { useGoogleAuth } from "../hooks/googleLogin";
 import { togglestate } from "../store/toggle";
 import Sidebar from "./SideBar";
 import { mentorrequest } from "../types/mentor";
@@ -20,7 +18,6 @@ import {
   MobileNavHeader,
   MobileNavMenu,
   MobileNavToggle,
-  NavbarLogo,
   NavbarButton,
 } from "../imported_components/ui/resizable-navbar";
 
@@ -50,6 +47,7 @@ const NewNavbar: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const googleLogin = useGoogleAuth();
+
   const fetchMentorRequests = async () => {
     const token = localStorage.getItem("jwt_token");
     try {
@@ -109,13 +107,21 @@ const NewNavbar: React.FC = () => {
     }
   };
 
-  const toggleSidebar = () => setToggle((prev) => (prev === null ? true : !prev));
   const closeSidebar = () => setToggle(false);
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setToggle(null);
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => setAnchorEl(null);
+
+  const handleLogout = () => {
+    setAnchorEl(null);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    localStorage.removeItem("jwt_token");
+    navigate("/");
+    window.location.reload();
+  };
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -126,16 +132,18 @@ const NewNavbar: React.FC = () => {
     { name: "Ideas", link: "/ideas" },
     { name: "Help", link: "/help" },
   ];
-  
 
   return (
     <div>
       <ResizableNavbar className="fixed top-0">
-        <NavBody>
-          {/* <NavbarLogo /> */}
+        {/* Desktop Navigation */}
+        <NavBody className="bg-arctic-steel/80 backdrop-blur-md border-b border-white/5">
           <NavItems items={navItems} />
           {!localStorage.getItem("access_token") ? (
-            <NavbarButton onClick={() => googleLogin()}>
+            <NavbarButton 
+              onClick={() => googleLogin()}
+              className="bg-gradient-to-r from-ice-surge to-frost-ember text-deep-night font-semibold hover:shadow-[0_0_20px_rgba(0,198,255,0.4)]"
+            >
               LOG IN
             </NavbarButton>
           ) : (
@@ -147,9 +155,10 @@ const NewNavbar: React.FC = () => {
                   aria-haspopup="true"
                   aria-expanded={anchorEl ? "true" : undefined}
                   onClick={handleMenuOpen}
-                  className="mx-5 border-2 border-blue-600 w-[60px]"
+                  className="cursor-pointer border-2 border-ice-surge/50 hover:border-ice-surge transition-colors"
                   alt={user.first_name}
                   src={user.image}
+                  sx={{ width: 40, height: 40 }}
                 />
                 <Menu
                   id="profile-menu"
@@ -158,72 +167,142 @@ const NewNavbar: React.FC = () => {
                   open={Boolean(anchorEl)}
                   onClose={handleMenuClose}
                   anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "left",
+                    vertical: "bottom",
+                    horizontal: "right",
                   }}
                   transformOrigin={{
                     vertical: "top",
-                    horizontal: "left",
+                    horizontal: "right",
+                  }}
+                  PaperProps={{
+                    sx: {
+                      backgroundColor: "#1A2333",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "12px",
+                      mt: 1,
+                      "& .MuiMenuItem-root": {
+                        color: "#DCE5F5",
+                        fontSize: "14px",
+                        "&:hover": {
+                          backgroundColor: "rgba(0, 198, 255, 0.1)",
+                        },
+                      },
+                    },
                   }}
                 >
-                  <MenuItem onClick={() => { setAnchorEl(null); navigate("/profileview"); }}>Profile</MenuItem>
+                  <MenuItem onClick={() => { setAnchorEl(null); navigate("/profileview"); }}>
+                    Profile
+                  </MenuItem>
                   {user.role === "1" && (
                     <MenuItem onClick={handleMentorRequest}>Mentor Request</MenuItem>
                   )}
                   {user.role === "scrummaster" && (
-                    <MenuItem onClick={() => { fetchMentorRequests(); setMentorRequestOpen(true); }}>Requests</MenuItem>
+                    <MenuItem onClick={() => { fetchMentorRequests(); setMentorRequestOpen(true); }}>
+                      Requests
+                    </MenuItem>
                   )}
                   {user.role === "2" && (
-                    <MenuItem onClick={() => { setDriveRequestOpen(true); }}>Add Progress</MenuItem>
+                    <MenuItem onClick={() => { setDriveRequestOpen(true); }}>
+                      Add Progress
+                    </MenuItem>
                   )}
-                  <MenuItem onClick={() => { setAnchorEl(null); 
-                    localStorage.removeItem("access_token"); 
-                    localStorage.removeItem("refresh_token");
-                    localStorage.removeItem("jwt_token");
-                  }}>Logout
+                  <MenuItem 
+                    onClick={handleLogout}
+                    sx={{ color: "#f87171 !important" }}
+                  >
+                    Logout
                   </MenuItem>
                 </Menu>
               </div>
             )
           )}
         </NavBody>
-        <MobileNav>
+
+        {/* Mobile Navigation */}
+        <MobileNav className="bg-transparent backdrop-blur-md border-b border-white/5">
           <MobileNavHeader>
-            <NavbarLogo />
+            <a href="/" className="text-frost-white font-bold text-lg">
+              Winter of Code
+            </a>
             <MobileNavToggle isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
           </MobileNavHeader>
-          <MobileNavMenu isOpen={isOpen} onClose={() => setIsOpen(false)}>
-            <NavItems items={navItems} onItemClick={() => setIsOpen(false)} />
+          <MobileNavMenu 
+            isOpen={isOpen} 
+            onClose={() => setIsOpen(false)}
+            className="bg-arctic-steel border border-white/10 rounded-xl mt-2 shadow-2xl"
+          >
+            {/* Navigation Links */}
+            <div className="flex flex-col space-y-1 w-full">
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.link}
+                  onClick={() => setIsOpen(false)}
+                  className="px-4 py-3 text-frost-white hover:bg-ice-surge/10 rounded-lg transition-colors text-sm font-medium"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="w-full h-px bg-white/10 my-2"></div>
+
+            {/* Auth Section */}
             {!localStorage.getItem("access_token") ? (
-              <NavbarButton onClick={() => { navigate("/login"); setIsOpen(false); }}>
+              <button
+                onClick={() => { googleLogin(); setIsOpen(false); }}
+                className="w-full py-3 px-4 bg-gradient-to-r from-ice-surge to-frost-ember text-deep-night font-semibold rounded-lg text-sm"
+              >
                 LOG IN
-              </NavbarButton>
+              </button>
             ) : (
               user && (
-                <div className="flex flex-col items-start space-y-2">
-                  <Button onClick={() => { navigate("/profileview"); setIsOpen(false); }}>Profile</Button>
+                <div className="flex flex-col space-y-1 w-full">
+                  <button
+                    onClick={() => { navigate("/profileview"); setIsOpen(false); }}
+                    className="w-full text-left px-4 py-3 text-frost-white hover:bg-ice-surge/10 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    Profile
+                  </button>
                   {user.role === "1" && (
-                    <Button onClick={() => { handleMentorRequest(); setIsOpen(false); }}>Mentor Request</Button>
+                    <button
+                      onClick={() => { handleMentorRequest(); setIsOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-frost-white hover:bg-ice-surge/10 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      Mentor Request
+                    </button>
                   )}
                   {user.role === "scrummaster" && (
-                    <Button onClick={() => { fetchMentorRequests(); setMentorRequestOpen(true); setIsOpen(false); }}>Requests</Button>
+                    <button
+                      onClick={() => { fetchMentorRequests(); setMentorRequestOpen(true); setIsOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-frost-white hover:bg-ice-surge/10 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      Requests
+                    </button>
                   )}
                   {user.role === "2" && (
-                    <Button onClick={() => { setDriveRequestOpen(true); setIsOpen(false); }}>Add Progress</Button>
+                    <button
+                      onClick={() => { setDriveRequestOpen(true); setIsOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-frost-white hover:bg-ice-surge/10 rounded-lg transition-colors text-sm font-medium"
+                    >
+                      Add Progress
+                    </button>
                   )}
-                  <Button onClick={() => {
-                    localStorage.removeItem("access_token");
-                    localStorage.removeItem("refresh_token");
-                    localStorage.removeItem("jwt_token");
-                    navigate("/login");
-                    setIsOpen(false);
-                  }}>Logout</Button>
+                  <button
+                    onClick={() => { handleLogout(); setIsOpen(false); }}
+                    className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-sm font-medium"
+                  >
+                    Logout
+                  </button>
                 </div>
               )
             )}
           </MobileNavMenu>
         </MobileNav>
       </ResizableNavbar>
+
+      {/* Modals */}
       <DriveModal
         open={isDriveRequestOpen}
         onClose={() => setDriveRequestOpen(false)}
@@ -234,6 +313,8 @@ const NewNavbar: React.FC = () => {
         mentors={mentors}
         onAccept={handleMentorAccept}
       />
+
+      {/* Snackbars */}
       <Snackbar
         open={isMentorRequestSnackbarOpen}
         autoHideDuration={6000}
@@ -248,6 +329,7 @@ const NewNavbar: React.FC = () => {
         message={successMessage}
         action={<SnackbarAction onClose={() => setSuccessSnackbarOpen(false)} />}
       />
+
       <Sidebar onClose={closeSidebar} />
     </div>
   );

@@ -1,50 +1,53 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { useRecoilValue,useRecoilState} from "recoil";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { togglestate } from "../store/toggle";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { userstate } from "../store/userState";
-import { TextField } from "@mui/material";
+import { motion } from "framer-motion";
+
 const BASE_URL = import.meta.env.VITE_REACT_APP_BASE_URL;
+
 const Profile: React.FC = () => {
   const [user, setuser] = useRecoilState(userstate);
   const [change, setchange] = useState(false);
   const [check, setcheck] = useState(false);
+
   useEffect(() => {
     const getuser = async () => {
       if (user) {
-          try {
-              const token = localStorage.getItem('jwt_token');
-              const userinfo = await axios.get(`${BASE_URL}/userinfo/${user.id}`
-              , {
-                  headers: {
-                      'Authorization': `Bearer ${token}` 
-                  }
-              });
-              if (userinfo.data.success != "true") {
-                setcheck(false);
-                setFirstName(user.first_name);
-                setLastName(user.last_name);
-              } else {
-                setcheck(true);
-                setFirstName(userinfo.data.user.first_name);
-                setLastName(userinfo.data.user.last_name);
-                setrole(userinfo.data.user.role);
-                setSelectedBranch(userinfo.data.user.branch);
-                setGithubLink(userinfo.data.user.githublink);
-                setPhoneNumber(userinfo.data.user.phonenumber);
-                setSelectedGender(userinfo.data.user.gender);
-                setSelectedYear(userinfo.data.user.year);
-                localStorage.setItem("jwt_token",userinfo.data.token);
-              }
-          } catch (error) {
-              console.error("Error fetching user info:", error);
+        try {
+          const token = localStorage.getItem("jwt_token");
+          const userinfo = await axios.get(`${BASE_URL}/userinfo/${user.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (userinfo.data.success != "true") {
+            setcheck(false);
+            setFirstName(user.first_name);
+            setLastName(user.last_name);
+          } else {
+            setcheck(true);
+            setFirstName(userinfo.data.user.first_name);
+            setLastName(userinfo.data.user.last_name);
+            setrole(userinfo.data.user.role);
+            setSelectedBranch(userinfo.data.user.branch);
+            setGithubLink(userinfo.data.user.githublink);
+            setPhoneNumber(userinfo.data.user.phonenumber);
+            setSelectedGender(userinfo.data.user.gender);
+            setSelectedYear(userinfo.data.user.year);
+            localStorage.setItem("jwt_token", userinfo.data.token);
           }
+        } catch (error) {
+          console.error("Error fetching user info:", error);
+        }
       }
-  };
+    };
     getuser();
   }, [user]);
+
   const navigate = useNavigate();
   const toggle = useRecoilValue(togglestate);
 
@@ -69,93 +72,96 @@ const Profile: React.FC = () => {
       phoneNumber,
     });
   };
-  const createuser = async () => {
 
-    if(user && typeof user.id === "string"){
-    const updateuser = {
-      ...user,
-      year: selectedYear,
-      branch: selectedBranch,
-      githublink: githubLink,
-      gender: selectedGender,
-      phonenumber: parseInt(phoneNumber),
-      role: role,
-      first_name: firstName,
-      last_name: lastName,
-    };
-    setuser(updateuser);
-    if (!check && user) {
-      try {
-        await axios.post(`${BASE_URL}/check-duplicate-username`, { first_name: firstName, last_name: lastName });
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
+  const createuser = async () => {
+    if (user && typeof user.id === "string") {
+      const updateuser = {
+        ...user,
+        year: selectedYear,
+        branch: selectedBranch,
+        githublink: githubLink,
+        gender: selectedGender,
+        phonenumber: parseInt(phoneNumber),
+        role: role,
+        first_name: firstName,
+        last_name: lastName,
+      };
+      setuser(updateuser);
+      if (!check && user) {
+        try {
+          await axios.post(`${BASE_URL}/check-duplicate-username`, {
+            first_name: firstName,
+            last_name: lastName,
+          });
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
             alert(error.response?.data.detail || "An error occurred.");
-        } else {
+          } else {
             alert("An unexpected error occurred.");
+          }
+          return;
         }
-        return;
-      }
-      const token = localStorage.getItem('jwt_token')
-      const response = await axios.post(
-        `${BASE_URL}/user`, 
-        {
+        const token = localStorage.getItem("jwt_token");
+        const response = await axios.post(
+          `${BASE_URL}/user`,
+          {
+            first_name: firstName,
+            last_name: lastName,
+            year: selectedYear,
+            email: user.email,
+            branch: selectedBranch,
+            githublink: githubLink,
+            gender: selectedGender,
+            phonenumber: phoneNumber,
+            role: role,
+            id: user.id,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log(response);
+        if (response.data.success == "true") {
+          localStorage.setItem("jwt_token", response.data.jwt_token);
+          navigate("/");
+        }
+      } else if (check && change && user) {
+        const updateduser = {
           first_name: firstName,
           last_name: lastName,
           year: selectedYear,
-          email: user.email,
           branch: selectedBranch,
           githublink: githubLink,
           gender: selectedGender,
           phonenumber: phoneNumber,
           role: role,
+          email: user.email,
           id: user.id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, 
+        };
+        const response = await axios.put(
+          `${BASE_URL}/updateuser`,
+          {
+            updateduser,
           },
-        }
-      );
-      
-      console.log(response)
-      if (response.data.success == "true"){ 
-        localStorage.setItem("jwt_token",response.data.jwt_token);
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("jwt_token")}`,
+            },
+          }
+        );
+        console.log(response);
+        navigate("/");
+      } else {
         navigate("/");
       }
-    } else if (check && change && user) {
-      const updateduser = {
-        first_name: firstName,
-        last_name: lastName,
-        year: selectedYear,
-        branch: selectedBranch,
-        githublink: githubLink,
-        gender: selectedGender,
-        phonenumber: phoneNumber,
-        role: role,
-        email:user.email,
-        id: user.id,
-      };
-      const response = await axios.put(
-        `${BASE_URL}/updateuser`, 
-        {
-          updateduser,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwt_token")}`
-          }
-        }
-      );
-      console.log(response);
-      navigate("/");
-    } else {
-      navigate("/");
     }
-  }
   };
 
   const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement |  HTMLTextAreaElement>,
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setchange(true);
     const { name, value } = event.target;
@@ -189,254 +195,245 @@ const Profile: React.FC = () => {
     }
   };
 
+  const inputClass =
+    "w-full px-4 py-3 bg-arctic-steel border border-white/10 rounded-lg text-frost-white placeholder-cloud-gray/50 focus:outline-none focus:border-ice-surge focus:ring-1 focus:ring-ice-surge transition-all duration-200";
+  const labelClass = "block text-sm font-medium text-frost-white mb-2";
+  const selectClass =
+    "w-full px-4 py-3 bg-arctic-steel border border-white/10 rounded-lg text-frost-white focus:outline-none focus:border-ice-surge focus:ring-1 focus:ring-ice-surge transition-all duration-200 appearance-none cursor-pointer";
+
   return (
     <div
-      className={`overflow-x-hidden ${toggle === null ? "" : toggle ? "contract" : "expand"}`}
+      className={`overflow-x-hidden min-h-screen bg-deep-night ${
+        toggle === null ? "" : toggle ? "contract" : "expand"
+      }`}
     >
-      <div
-        className=" flex justify-center md2:h-[180px] h-[120px] w-screen md2:absolute md2:top-0 md2:left-0 z-1 "
-        style={{ backgroundColor: "#1976d2" }}
-      ></div>
-      <div className=" md2:my-[120px] bg-white md2:w-[808px] shadow-custom md2:absolute md2:top-0 md2:right-1/2 md2:transform md2:translate-x-1/2 z-0">
-        <div className="isolate bg-white px-6 py-24 sm:py-32 lg:px-8">
-          <div
-            className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
-            aria-hidden="true"
-          >
-            <div
-              className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
-              style={{
-                clipPath:
-                  "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-              }}
-            />
-          </div>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Update Profile
-            </h2>
-            <p className="mt-2 text-lg leading-8 text-gray-600">
+      {/* Header */}
+      <div className="relative h-[120px] sm:h-[180px] w-full bg-gradient-to-r from-arctic-steel via-cold-slate to-arctic-steel">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-deep-night/50"></div>
+      </div>
+
+      {/* Form Container */}
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-24 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="glass-panel rounded-2xl p-6 sm:p-10"
+        >
+          {/* Title */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-frost-white mb-2">
+              {check ? "Update Profile" : "Create Profile"}
+            </h1>
+            <p className="text-cloud-gray text-sm sm:text-base">
               Your Winter of Code's Official Account Details
             </p>
           </div>
-          <form
-            action="#"
-            method="POST"
-            className="mx-auto mt-16 max-w-xl sm:mt-20"
-            onSubmit={handleFormSubmit}
-          >
-            <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+
+          <form onSubmit={handleFormSubmit} className="space-y-6">
+            {/* Name Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
+                <label htmlFor="first-name" className={labelClass}>
                   First name
                 </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autoComplete="given-name"
-                    value={firstName}
-                    required
-                    error={!firstName}
-                    helperText={!firstName?"firstname cannot be empty":''}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="first-name"
+                  id="first-name"
+                  autoComplete="given-name"
+                  value={firstName}
+                  required
+                  onChange={handleInputChange}
+                  className={`${inputClass} ${!firstName ? "border-red-500/50" : ""}`}
+                  placeholder="Enter first name"
+                />
+                {!firstName && (
+                  <p className="text-red-400 text-xs mt-1">First name is required</p>
+                )}
               </div>
+
               <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
+                <label htmlFor="last-name" className={labelClass}>
                   Last name
                 </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="text"
-                    name="last-name"
-                    id="last-name"
-                    required
-                    error={!lastName}
-                    helperText={!lastName?"Lastname cannot be empty":''}
-                    autoComplete="family-name"
-                    value={lastName}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="years"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Select Your Year
-                </label>
-                <select
-                  id="years"
-                  name="selectedYear"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  value={selectedYear}
-                  onChange={(e) => {
-                    setSelectedYear(e.target.value);
-                    setchange(true);
-                  }}
-                >
-                  <option value="0">Year</option>
-                  <option value="1">1st Year</option>
-                  <option value="2">2nd Year</option>
-                  <option value="3">3rd Year</option>
-                  <option value="4">4th Year</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="gender"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Gender
-                </label>
-                <select
-                  id="gender"
-                  name="selectedGender"
-                  defaultValue={selectedGender}
-                  value={selectedGender}
-                  onChange={(e) => {
-                    setSelectedGender(e.target.value);
-                    setchange(true);
-                  }}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                >
-                  <option value="">Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="branches"
-                  className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Branch
-                </label>
-                <select
-                  id="branches"
-                  name="selectedBranch"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  defaultValue={selectedBranch}
-                  value={selectedBranch}
-                  onChange={(e) => {
-                    setSelectedBranch(e.target.value);
-                    setchange(true);
-                  }}
-                >
-                  <option value="">Branch</option>
-                  <option value="ch">Chemical Engineering</option>
-                  <option value="ai">
-                    Artificial Intelligence and Data Science
-                  </option>
-                  <option value="ee">Electrical Engineering</option>
-                  <option value="me">Mechanical Engineering</option>
-                  <option value="cse">Computer Science and Engineering</option>
-                  <option value="ci">Civil Engineering</option>
-                  <option value="mt">Materials Engineering</option>
-                  <option value="bsbe">Bioscience and Biotechnology</option>
-                  <option value="es">Engineering Science</option>
-                  <option value="ph">Bachelor of Science (Physics)</option>
-                  <option value="cy">Bachelor of Science (Chemistry)</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="github"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Github Link
-                </label>
-                <div className="mt-2.5">
-                  <TextField
-                    type="github"
-                    name="github"
-                    id="github"
-                    autoComplete="github"
-                    value={githubLink}
-                    required
-                    helperText={!githubLink?"Githublink cannot be empty":''}
-                    error={!githubLink}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <div className="sm:col-span-2">
-                <label
-                  htmlFor="phone-number"
-                  className="block text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Phone number
-                </label>
-                <div className="relative mt-2.5">
-                  <TextField
-                    type="tel"
-                    name="phone-number"
-                    id="phone-number"
-                    autoComplete="tel"
-                    value={phoneNumber}
-                    required
-                    error={!phoneNumber || !/^[0-9]{10}$/.test(phoneNumber)}  
-                    helperText={!phoneNumber || !/^[0-9]{10}$/.test(phoneNumber) ? "Phone number must be exactly 10 digits" : ""}
-                    onChange={handleInputChange}
-        
-                  />
-                </div>
+                <input
+                  type="text"
+                  name="last-name"
+                  id="last-name"
+                  autoComplete="family-name"
+                  value={lastName}
+                  required
+                  onChange={handleInputChange}
+                  className={`${inputClass} ${!lastName ? "border-red-500/50" : ""}`}
+                  placeholder="Enter last name"
+                />
+                {!lastName && (
+                  <p className="text-red-400 text-xs mt-1">Last name is required</p>
+                )}
               </div>
             </div>
 
-            <div className="mt-10">
-              {check ? (
-                <div>
-                <button
-                  onClick={createuser}
-                  disabled={!firstName || !lastName || !githubLink || !/^[0-9]{10}$/.test(phoneNumber)}
-                  type="submit"
-                  className={`block w-full rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm 
-                    ${!firstName || !lastName || !githubLink || !/^[0-9]{10}$/.test(phoneNumber) ? 
-                    "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-500"} 
-                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
-                >
-                  Save
-                </button>
-                {(!firstName || !lastName || !githubLink || (phoneNumber && !/^[0-9]{10}$/.test(phoneNumber))) && (
-                  <p className="text-red-500 text-sm">Please fill in all required fields.</p>
-                )}
-              </div>
-              ) : (
-                <div>
+            {/* Year Select */}
+            <div>
+              <label htmlFor="years" className={labelClass}>
+                Select Your Year
+              </label>
+              <select
+                id="years"
+                name="selectedYear"
+                className={selectClass}
+                value={selectedYear}
+                onChange={(e) => {
+                  setSelectedYear(e.target.value);
+                  setchange(true);
+                }}
+              >
+                <option value="0">Select Year</option>
+                <option value="1">1st Year</option>
+                <option value="2">2nd Year</option>
+                <option value="3">3rd Year</option>
+                <option value="4">4th Year</option>
+              </select>
+            </div>
 
-                <button
-                  onClick={createuser}
-                  disabled={!firstName || !lastName || !githubLink || !/^[0-9]{10}$/.test(phoneNumber)}
-                  type="submit"
-                  className={`block w-full rounded-md px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm 
-                    ${!firstName || !lastName || !githubLink || !/^[0-9]{10}$/.test(phoneNumber) ? 
-                    "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-500"} 
-                    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`}
-                >
-                  Create Profile
-                </button>
-                {(!firstName || !lastName || !githubLink || (phoneNumber && !/^[0-9]{10}$/.test(phoneNumber))) && (
-                  <p className="text-red-500 text-sm">Please fill in all required fields.</p>
-                )}
-              </div>
+            {/* Gender Select */}
+            <div>
+              <label htmlFor="gender" className={labelClass}>
+                Gender
+              </label>
+              <select
+                id="gender"
+                name="selectedGender"
+                value={selectedGender}
+                onChange={(e) => {
+                  setSelectedGender(e.target.value);
+                  setchange(true);
+                }}
+                className={selectClass}
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+            {/* Branch Select */}
+            <div>
+              <label htmlFor="branches" className={labelClass}>
+                Branch
+              </label>
+              <select
+                id="branches"
+                name="selectedBranch"
+                className={selectClass}
+                value={selectedBranch}
+                onChange={(e) => {
+                  setSelectedBranch(e.target.value);
+                  setchange(true);
+                }}
+              >
+                <option value="">Select Branch</option>
+                <option value="ch">Chemical Engineering</option>
+                <option value="ai">Artificial Intelligence and Data Science</option>
+                <option value="ee">Electrical Engineering</option>
+                <option value="me">Mechanical Engineering</option>
+                <option value="cse">Computer Science and Engineering</option>
+                <option value="ci">Civil Engineering</option>
+                <option value="mt">Materials Engineering</option>
+                <option value="bsbe">Bioscience and Biotechnology</option>
+                <option value="es">Engineering Science</option>
+                <option value="ph">Bachelor of Science (Physics)</option>
+                <option value="cy">Bachelor of Science (Chemistry)</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            {/* Github Link */}
+            <div>
+              <label htmlFor="github" className={labelClass}>
+                Github Link
+              </label>
+              <input
+                type="url"
+                name="github"
+                id="github"
+                autoComplete="url"
+                value={githubLink}
+                required
+                onChange={handleInputChange}
+                className={`${inputClass} ${!githubLink ? "border-red-500/50" : ""}`}
+                placeholder="https://github.com/username"
+              />
+              {!githubLink && (
+                <p className="text-red-400 text-xs mt-1">Github link is required</p>
+              )}
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label htmlFor="phone-number" className={labelClass}>
+                Phone number
+              </label>
+              <input
+                type="tel"
+                name="phone-number"
+                id="phone-number"
+                autoComplete="tel"
+                value={phoneNumber}
+                required
+                onChange={handleInputChange}
+                className={`${inputClass} ${
+                  !phoneNumber || !/^[0-9]{10}$/.test(phoneNumber)
+                    ? "border-red-500/50"
+                    : ""
+                }`}
+                placeholder="Enter 10 digit phone number"
+              />
+              {(!phoneNumber || !/^[0-9]{10}$/.test(phoneNumber)) && (
+                <p className="text-red-400 text-xs mt-1">
+                  Phone number must be exactly 10 digits
+                </p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                onClick={createuser}
+                disabled={
+                  !firstName ||
+                  !lastName ||
+                  !githubLink ||
+                  !/^[0-9]{10}$/.test(phoneNumber)
+                }
+                type="submit"
+                className={`w-full py-3 sm:py-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300 ${
+                  !firstName ||
+                  !lastName ||
+                  !githubLink ||
+                  !/^[0-9]{10}$/.test(phoneNumber)
+                    ? "bg-cold-slate text-cloud-gray cursor-not-allowed"
+                    : "bg-gradient-to-r from-ice-surge to-frost-ember text-deep-night hover:shadow-[0_0_30px_rgba(0,198,255,0.4)]"
+                }`}
+              >
+                {check ? "Save Changes" : "Create Profile"}
+              </button>
+
+              {(!firstName ||
+                !lastName ||
+                !githubLink ||
+                (phoneNumber && !/^[0-9]{10}$/.test(phoneNumber))) && (
+                <p className="text-red-400 text-sm text-center mt-3">
+                  Please fill in all required fields correctly.
+                </p>
               )}
             </div>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 };
+
 export default Profile;

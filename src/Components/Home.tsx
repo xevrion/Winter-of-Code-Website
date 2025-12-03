@@ -1,4 +1,3 @@
-
 import { IoMdFlash } from "react-icons/io";
 import { MdSupervisorAccount, MdBuild } from "react-icons/md";
 import { useRecoilValue } from "recoil";
@@ -13,16 +12,36 @@ import FallingCircles from "./FallingCircles";
 
 const Home = () => {
   const toggle = useRecoilValue(togglestate);
-  const googleLogin=useGoogleAuth()
+  const googleLogin = useGoogleAuth();
+
+  const features = [
+    {
+      icon: <MdSupervisorAccount className="h-10 w-10 sm:h-12 sm:w-12 text-ice-surge" />,
+      title: "Working with experienced mentors",
+      description:
+        "WOC is a place where you don't just get to apply your skills but also get to acquire a bunch of new ones. WoC introduces you to the open source world and building code collaboratively while working under experienced mentors.",
+    },
+    {
+      icon: <MdBuild className="h-10 w-10 sm:h-12 sm:w-12 text-ice-surge" />,
+      title: "Learn development",
+      description:
+        "Develop the project codebase. Write test suites. Add integrations and lots more depending on your project. Use Git to track changes and create Pull Requests on GitHub.",
+    },
+    {
+      icon: <IoMdFlash className="h-10 w-10 sm:h-12 sm:w-12 text-ice-surge" />,
+      title: "Contribute to Open Source",
+      description:
+        "During the 5 weeks of writing good code, you interact and share ideas with great people. At the end of it, you've made deep connections and get ready to compete in GSoC.",
+    },
+  ];
+
   return (
-    <div className={`overflow-x-hidden ${toggle === null ? "" : toggle ? "contract" : "expand"}`}>
+    <div className={`overflow-x-hidden bg-deep-night min-h-screen ${toggle === null ? "" : toggle ? "contract" : "expand"}`}>
+      {/* Hero Section */}
       <div
-        className="flex flex-col justify-center items-center relative overflow-hidden h-[590px] bg-cover"
+        className="flex flex-col justify-center items-center relative overflow-hidden min-h-[500px] sm:min-h-[590px] bg-cover"
         style={{
-          backgroundColor: "#111722",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
+          background: "linear-gradient(180deg, #0A0D12 0%, #111722 100%)",
         }}
       >
         <FallingCircles />
@@ -31,29 +50,30 @@ const Home = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="flex flex-col items-center relative z-10"
+          className="flex flex-col items-center relative z-10 px-4"
         >
-          <div className="flex flex-col sm:flex-row items-center gap-0">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-0">
             <img
               src={devlupLogo}
               alt="DevlUp Labs Logo"
-              className="w-auto h-52 mb-8"
+              className="w-auto h-32 sm:h-44 md:h-52 mb-4 sm:mb-8"
             />
 
-            <div>
-              <div className="mx-0 font-sans2 text-center text-[66px] relative z-10 sm:h-[80px] font-bold bg-gradient-to-r from-[#5B8CFF] to-[#f5a836] text-transparent bg-clip-text animate-gradient mb-8">
+            <div className="text-center sm:text-left">
+              <h1 className="font-sans2 text-4xl sm:text-5xl md:text-6xl lg:text-[66px] relative z-10 font-bold bg-gradient-to-r from-ice-surge to-frost-ember text-transparent bg-clip-text animate-gradient mb-4 sm:mb-8">
                 Winter Of Code
-              </div>
+              </h1>
 
-              <div className="mx-0 font-sans2 text-[32px] sm:text-[30px] text-center relative z-10 font-bold text-[#DCE5F5] sm:h-[80px]">
+              <div className="font-sans2 text-xl sm:text-2xl md:text-[30px] relative z-10 font-bold text-frost-white h-[50px] sm:h-[80px]">
                 <Typewriter
                   options={{
                     loop: true,
                     autoStart: true,
-                    delay: 80
+                    delay: 80,
                   }}
                   onInit={(typewriter) => {
-                    typewriter.typeString('Organized by DevlUp Labs')
+                    typewriter
+                      .typeString("Organized by DevlUp Labs")
                       .pauseFor(250000)
                       .deleteAll()
                       .start();
@@ -65,177 +85,101 @@ const Home = () => {
         </motion.div>
       </div>
 
-      <div className="bg-[#111722] font-stylish relative z-20">
-        <div className="flex text-center justify-center text-[24px] py-10 text-[#DCE5F5]">
-          Let's do something creative this winter!
+      {/* Features Section */}
+      <div className="bg-deep-night font-stylish relative z-20 py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center text-lg sm:text-xl md:text-2xl py-6 sm:py-10 text-frost-white">
+            Let's do something creative this winter!
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col items-center"
+          >
+            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-frost-white to-ice-surge mt-5 mb-8 sm:mb-12">
+              How does WOC help you?
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="glass-card rounded-2xl p-6 sm:p-8"
+                >
+                  <div className="flex justify-center mb-4">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-center text-lg sm:text-xl md:text-2xl text-frost-white mb-4 font-semibold">
+                    {feature.title}
+                  </h3>
+                  <p className="text-center text-sm sm:text-base text-cloud-gray leading-relaxed">
+                    {feature.description}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className=" flex flex-col items-center"
-        >
-          <div className="text-center mx-6 text-[32px] font-semibold text-[#DCE5F5] mt-5">
-            How does WOC help you?
-          </div>
-          <div className="grid md:grid-cols-3 text-[#DCE5F5]">
-            <div className="ml-5">
-              <div className="flex justify-center">
-                <MdSupervisorAccount className="h-12 w-12 m-3 flex text-blue-500" />
-              </div>
-              <div className="flex mx-5 justify-center text-center text-[26px]">Working with experienced mentors</div>
-              <div className="font-sans text-[18px] m-5">
-                WOC is a place where you don't just get to apply your skills but also get to acquire a bunch of new ones. WoC
-                introduces you to the open source world and building code collaboratively while working under experienced mentors.
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-center">
-                <MdBuild className="h-12 w-12 flex m-3 text-blue-500" />
-              </div>
-              <div className="flex justify-center text-[26px]">Learn development</div>
-              <div className="font-sans text-[18px] m-10">
-                Develop the project codebase. Write test suites. Add integrations and lots more depending on your project. Use Git
-                to track changes and create Pull Requests on GitHub.
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-center">
-                <IoMdFlash className="h-12 w-12 flex m-3 text-blue-500" />
-              </div>
-              <div className="flex justify-center text-[26px]">Contribute to Open Source</div>
-              <div className="font-sans text-[18px] m-10">
-                During the 5 weeks of writing good code, you interact and share ideas with great people. At the end of it, you've
-                made deep connections and get ready to compete in GSoC.
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
 
-      <div className="relative z-20">
-        {/* <div
-          className="h-[320px] w-screen flex flex-col justify-center items-center relative overflow-hidden"
-          style={{
-            backgroundImage: "url(https://i.imgur.com/WwDfTfH.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundAttachment: "fixed",
-          }}
-        >
-          <div className="text-[26px] text-center mx-10 text-white relative z-10">
-            Diving into open source development has never been simpler.
+      {/* CTA Section */}
+      <div className="relative z-20 bg-deep-night py-12 sm:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <h2 className="text-center text-2xl sm:text-3xl md:text-4xl mb-10 sm:mb-16 text-frost-white font-semibold">
+            Interested to know more?
+          </h2>
+
+          <div className="flex flex-col gap-4">
+            <Link
+              to="/how-it-works"
+              className="glass-card flex justify-center items-center py-3 sm:py-4 px-6 text-sm sm:text-base font-medium rounded-xl text-frost-white hover:border-ice-surge/50 hover:shadow-[0_0_20px_rgba(0,198,255,0.3)] transition-all duration-300"
+            >
+              SEE PROGRAM TIMELINE
+            </Link>
+
+            <a
+              href="/StudentManual.pdf"
+              className="glass-card flex justify-center items-center py-3 sm:py-4 px-6 text-sm sm:text-base font-medium rounded-xl text-frost-white hover:border-ice-surge/50 hover:shadow-[0_0_20px_rgba(0,198,255,0.3)] transition-all duration-300"
+            >
+              STUDENT MANUAL
+            </a>
+
+            <a
+              href="/MentorManual.pdf"
+              className="glass-card flex justify-center items-center py-3 sm:py-4 px-6 text-sm sm:text-base font-medium rounded-xl text-frost-white hover:border-ice-surge/50 hover:shadow-[0_0_20px_rgba(0,198,255,0.3)] transition-all duration-300"
+            >
+              MENTOR MANUAL
+            </a>
           </div>
-          <div className="text-[15px] text-center m-2 italic text-white relative z-10">Now build something!</div>
-          <div className="absolute top-0 left-0 w-full h-full filter blur-sm z-0" />
-        </div> */}
 
-        <div className="flex justify-center text-center text-[35px] my-20 text-[#DCE5F5]">Interested to know more?</div>
+          <h2 className="text-center text-xl sm:text-2xl md:text-3xl my-10 sm:my-16 text-frost-white font-semibold">
+            Login with your Gmail account to register as a student
+          </h2>
 
-        <div className="flex justify-center">
-          <Link
-            to="/how-it-works"
-            className="
-              flex justify-center fontstylish py-2 text-[16px]
-              m-2 w-[600px] p-3 rounded-xl
-              bg-[#1e3a5f] text-white 
-              border border-[#87bfff] 
-              hover:shadow-[0_0_12px_rgba(135,191,255,0.8)]
-              hover:border-[#c3e6ff]
-              transition
-              bg-cover bg-center
-            hover:bg-[url('./assets/snowflake.png')]
-            hover:bg-repeat-x
-            hover:bg-[50%_10%]
-            hover:bg-contain
-
-            "
-
-          >
-            SEE PROGRAM TIMELINE
-          </Link>
-        </div>
-
-        <div className="flex justify-center">
-          <a
-            href="/StudentManual.pdf"
-            className="
-              flex justify-center fontstylish py-2 text-[16px]
-              m-2 w-[600px] p-3 rounded-xl
-              bg-[#1e3a5f] text-white 
-              border border-[#87bfff] 
-              hover:shadow-[0_0_12px_rgba(135,191,255,0.8)]
-              hover:border-[#c3e6ff]
-              transition
-hover:bg-[url('./assets/snowflake.png')]
-hover:bg-repeat-x
-hover:bg-[70%_30%]
-hover:bg-contain
-            "
-
-          >
-            STUDENT MANUAL
-          </a>
-        </div>
-
-        <div className="flex justify-center ">
-          <a
-            href="/MentorManual.pdf"
-            className="flex justify-center fontstylish py-2 text-[16px]  m-2 w-[600px] p-3 rounded-xl bg-[#1e3a5f] text-white border border-[#87bfff] hover:shadow-[0_0_12px_rgba(135,191,255,0.8)] hover:border-[#c3e6ff] transition hover:bg-[url('./assets/snowflake.png')]
-              hover:bg-repeat-x
-              hover:bg-[20%_30%]
-              hover:bg-contain"
-          >
-            MENTOR MANUAL
-          </a>
-        </div>
-
-        <div className="flex justify-center text-center mx-6 text-[35px] my-10 text-[#DCE5F5]">
-          Login with your Gmail account to register as a student
-        </div>
-
-        <div className="flex justify-center">
-          <div
-            onClick={()=>googleLogin()}
-            className="flex justify-center fontstylish py-2 text-[16px] cursor-pointer  m-2 w-[600px] p-3 rounded-xl bg-[#1e3a5f] text-white border border-[#87bfff] hover:shadow-[0_0_12px_rgba(135,191,255,0.8)] hover:border-[#c3e6ff] transition mb-20 hover:bg-[url('./assets/snowflake.png')]
-              hover:bg-repeat-x
-              hover:bg-[20%_10%]
-              hover:bg-contain"
-          >
-            REGISTER
+          <div className="flex justify-center">
+            <button
+              onClick={() => googleLogin()}
+              className="w-full max-w-md py-3 sm:py-4 px-8 rounded-xl font-semibold text-deep-night bg-gradient-to-r from-ice-surge to-frost-ember hover:shadow-[0_0_30px_rgba(0,198,255,0.4)] transition-all duration-300 text-sm sm:text-base"
+            >
+              REGISTER
+            </button>
           </div>
         </div>
-
-        {/* <div className="text-[45px] flex justify-center mt-20 mb-5 text-[#DCE5F5]">Contact Us</div>
-
-        <div className="flex justify-center pb-10">
-          <div>
-            <div className="my-2 flex mx-5">
-              <FaGithub className="w-8 h-8 mx-5" />
-              <a className="text-blue-500" href="https://github.com/devlup-labs">
-                devlup-labs
-              </a>
-            </div>
-
-            <div className="my-2 flex mx-5">
-              <BiLogoDiscord className="w-10 h-10 mx-5" />
-              <a className="text-blue-500" href="https://discord.gg/">
-                Discord
-              </a>
-            </div>
-
-            <div className="my-2 flex mx-5">
-              <IoMail className="w-10 h-10 mx-5" />
-              <a className="text-blue-500" href="mailto:devluplabs@iitj.ac.in">
-                devluplabs@iitj.ac.in
-              </a>
-            </div> */}
-        {/* </div>
-        </div> */}
       </div>
+
+      {/* Footer */}
+      <footer className="bg-deep-night border-t border-white/5 py-8">
+        <p className="text-center text-xs sm:text-sm text-cloud-gray/60">
+          © 2025 Winter of Code. Crafted with frost & code.
+        </p>
+      </footer>
     </div>
   );
 };
